@@ -1,0 +1,3649 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ceklok Guru MTS TANUNTUNG</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --secondary: #004b99;
+      --accent: #f0f4f8;
+      --disabled: #e0e0e0;
+      --text: #333;
+      --bg: #f4f7f6;
+      --white: #fff;
+      --danger: #e74c3c;
+      --danger-hover: #c0392b;
+      --grey-text: #555;
+      --border-color: #ccc;
+      --success: #28a745;
+      --success-hover: #218838;
+      --warning: #ffc107;
+      --warning-hover: #e0a800;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin:0;
+      padding:0;
+      font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding-bottom: 70px; /* Space for fixed footer */
+      padding-top: 60px; /* Space for fixed profile menu */
+    }
+    #app {
+      flex-grow: 1;
+      width: 100%;
+      padding: 10px; 
+      box-sizing: border-box;
+    }
+    .login-active #app {
+        display: flex; /* Tetap flex untuk centering loginContainer */
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 20px; /* Padding untuk viewport kecil */
+    }
+    /* Penyesuaian untuk Body saat Login Aktif */
+    body.login-active {
+        padding-top: 0; /* Hapus padding atas dari menu profil */
+        display: flex;
+        flex-direction: column; 
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-color: var(--bg); /* KEMBALIKAN KE WARNA BACKGROUND SEMULA */
+    }
+    /* Styling khusus untuk kontainer login */
+    .login-form-wrapper { /* Target kelas baru dari login_form.html */
+        background-color: var(--white);
+        padding: 35px 40px; /* Padding lebih lapang */
+        border-radius: 12px; /* Sudut lebih membulat */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Bayangan lebih halus */
+        width: 100%;
+        max-width: 420px; /* Lebar maksimal form login */
+        text-align: center; /* Pusatkan teks secara default di dalam wrapper */
+        border-top: none; /* Hapus border-top dari .form-column jika tidak diinginkan */
+    }
+
+    .login-header {
+        margin-bottom: 25px;
+    }
+
+    #loginLogo {
+        display: block; /* Agar margin auto bekerja jika ada */
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 70px; 
+        margin-bottom: 15px;
+        /* Uncomment baris di bawah jika Anda punya logo dan ingin menampilkannya */
+        /* display: block !important;  */
+    }
+
+
+    .login-form-wrapper h2 {
+        font-size: 1.8em; /* Ukuran judul disesuaikan */
+        font-weight: 600; /* Sedikit lebih tebal */
+        color: var(--secondary);
+        line-height: 1.3;
+        margin-top: 0;
+        margin-bottom: 0; /* Margin diatur oleh .login-header */
+    }
+
+    .login-form-wrapper .form-group {
+        margin-bottom: 22px; /* Jarak antar grup form */
+        text-align: left; /* Label dan input rata kiri */
+    }
+
+    .login-form-wrapper .form-group label {
+        font-size: 0.88em; /* Label sedikit lebih kecil */
+        font-weight: 500;
+        color: var(--grey-text);
+        margin-bottom: 8px;
+    }
+
+    .login-form-wrapper input[type="text"],
+    .login-form-wrapper input[type="password"],
+    .login-form-wrapper input[type="email"] {
+        padding: 12px 15px;
+        font-size: 1em;
+        border-radius: 6px; /* Sudut input sedikit membulat */
+        border: 1px solid #ddd; /* Border lebih halus */
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .login-form-wrapper input[type="text"]:focus,
+    .login-form-wrapper input[type="password"]:focus,
+    .login-form-wrapper input[type="email"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(0,102,204,.2);
+    }
+
+    .login-form-wrapper .password-wrapper {
+        margin-bottom: 0; /* Hapus margin bawah dari wrapper password jika input di dalamnya sudah punya */
+    }
+    .login-form-wrapper .password-wrapper input[type="password"],
+    .login-form-wrapper .password-wrapper input[type="text"] {
+        margin-bottom: 0; /* Pastikan tidak ada margin ganda */
+    }
+
+
+    .login-form-wrapper #loginButton {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1.05em;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        margin-top: 10px; /* Jarak dari form group terakhir */
+        border-radius: 6px;
+    }
+
+    .login-links {
+        margin-top: 25px; /* Jarak dari tombol login */
+        font-size: 0.9em;
+    }
+
+    .login-form-wrapper #forgotPasswordLink {
+        color: var(--primary);
+        text-decoration: none;
+    }
+    .login-form-wrapper #forgotPasswordLink:hover {
+        color: var(--secondary);
+        text-decoration: underline;
+    }
+
+    /* Styling untuk form Lupa Password dan Reset OTP */
+    #forgotPasswordContainer, #resetPasswordContainer {
+        margin-top: 25px;
+        border-top: 1px solid #eee;
+        padding-top: 25px;
+        text-align: left; /* Kembalikan ke rata kiri untuk konten di dalamnya */
+    }
+
+    #forgotPasswordContainer h3, #resetPasswordContainer h3 {
+        text-align: center; /* Judul tetap di tengah */
+        font-size: 1.4em;
+        color: var(--secondary);
+        margin-bottom: 15px;
+    }
+    #forgotPasswordContainer p, #resetPasswordContainer p {
+        text-align: center; /* Paragraf instruksi di tengah */
+        font-size: 0.9em;
+        color: var(--grey-text);
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    /* Tombol sekunder seperti Batal */
+    .btn-secondary-action {
+        background-color: #6c757d !important; /* Warna abu-abu netral */
+        color: white !important;
+    }
+    .btn-secondary-action:hover {
+        background-color: #5a6268 !important;
+    }
+
+    .login-form-wrapper .error-message {
+        padding: 10px 15px; /* Padding lebih baik untuk pesan error */
+        margin-top: 0; /* Atur margin bawah saja jika perlu */
+        margin-bottom: 18px;
+        font-size: 0.88em;
+        text-align: center; /* Error utama di tengah */
+    }
+
+    /* Penyesuaian untuk tampilan mobile jika perlu */
+    @media (max-width: 480px) {
+        .login-form-wrapper {
+            padding: 25px 20px;
+            margin: 15px; /* Tambahkan margin di viewport kecil */
+            max-width: none; /* Biarkan mengambil lebar penuh dengan padding */
+        }
+        .login-form-wrapper h2 {
+            font-size: 1.5em;
+        }
+    }
+    .container {
+        max-width:900px;
+        margin:10px auto; 
+        padding:15px; 
+        box-sizing: border-box;
+        background-color: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    h2 { text-align:center; color:var(--primary); margin-top:0; margin-bottom:20px; font-size:1.8em; }
+    h3 { text-align:center; color:var(--secondary); margin-top:15px; margin-bottom:15px; font-size:1.4em;}
+
+    label {
+        font-weight:bold;
+        display:block;
+        margin-bottom: 5px;
+        font-size: 0.95em;
+        color: var(--grey-text);
+    }
+    select,input[type="text"], input[type="password"], input[type="date"], input[type="month"], input[type="email"], textarea {
+      width:100%; padding:10px 12px; 
+      border-radius:6px;
+      border:1px solid var(--border-color); font-size:16px; box-sizing: border-box;
+      transition: border-color .3s, box-shadow .3s;
+      margin-bottom: 10px; 
+    }
+    select { height: 42px; }
+    input[type="month"] { height: 42px; padding: 8px 12px; } 
+    textarea { min-height: 80px; }
+
+    select:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="email"]:focus, textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.2rem rgba(0,102,204,.25);
+        outline: none;
+    }
+    input[disabled], select[disabled], textarea[disabled] { background:var(--disabled); color:#777; cursor: not-allowed; }
+
+    button {
+      padding:10px 18px; font-size:15px; border:none; border-radius:6px;
+      cursor:pointer; margin:5px; 
+      transition:background .3s;
+      color:var(--white); background:var(--primary); letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    button:hover { background:var(--secondary); }
+    button.btn-danger { background: var(--danger); }
+    button.btn-danger:hover { background: var(--danger-hover); }
+    button.btn-success { background: var(--success); }
+    button.btn-success:hover { background: var(--success-hover); }
+    button.btn-warning { background: var(--warning); color: var(--text); }
+    button.btn-warning:hover { background: var(--warning-hover); color: var(--text); }
+    button:disabled { background: var(--disabled); color: #888; cursor: not-allowed; }
+
+    .btn-container { display:flex; justify-content:center; flex-wrap:wrap; margin-top: 20px; margin-bottom: 10px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: var(--white); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    th, td { padding: 10px 12px; text-align: left; border: 1px solid #ddd; vertical-align: middle; }
+    th { background:var(--primary); color:var(--white); font-weight: bold; text-transform: uppercase; font-size:0.85em; text-align: center;}
+    td.actions-cell { text-align: center; white-space: nowrap; }
+    td.actions-cell button { padding: 6px 10px; font-size: 0.9em; margin: 2px;}
+
+    tr:nth-child(even) { background-color: var(--accent); }
+    td input[type="text"].inline-input { width: 100%; box-sizing: border-box; margin: 0; padding: 8px 10px; line-height: 1.2; height: auto; vertical-align: middle; font-size:15px; text-align: center;}
+
+    @media (max-width:700px) {
+      table,thead,tbody,th,td,tr { display:block; }
+      thead { display:none; }
+      tr { margin-bottom:15px; background:var(--white); border:1px solid #ddd; border-radius:8px; padding:10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+      td { text-align:right; padding:10px; position:relative; border: none; border-bottom: 1px solid #eee;}
+      td:last-child { border-bottom: none; }
+      td::before { content:attr(data-label); font-weight:bold; display:inline-block; margin-right:10px; color:var(--primary); text-align:left; float:left;}
+      td.actions-cell { text-align: right;}
+      td.actions-cell button { display: inline-block; margin-left: 5px; }
+      td input[type="text"].inline-input { text-align: right; }
+      #hasilCeklokContainer .table-container table {
+          display: table; width: 100%; margin-bottom: 0; background: transparent;
+          border: none; border-radius: 0; padding: 0; box-shadow: none;
+      }
+      #hasilCeklokContainer .table-container thead { display: table-header-group !important; }
+      #hasilCeklokContainer .table-container tbody { display: table-row-group; }
+      #hasilCeklokContainer .table-container tr {
+          display: table-row; margin-bottom: 0; background: var(--white);
+          border: none; border-radius: 0; padding: 0; box-shadow: none;
+      }
+      #hasilCeklokContainer .table-container tr:nth-child(even) { background-color: var(--accent); }
+      #hasilCeklokContainer .table-container tr:nth-child(odd) { background-color: var(--white); }
+      #hasilCeklokContainer .table-container th,
+      #hasilCeklokContainer .table-container td {
+          display: table-cell; text-align: left; padding: 10px 12px;
+          border: 1px solid #ddd; position: static; float: none;
+      }
+      #hasilCeklokContainer .table-container td::before { display: none !important; }
+      #hasilCeklokContainer .table-container th {
+          background: var(--primary); color: var(--white); font-weight: bold;
+          text-transform: uppercase; font-size: 0.85em; text-align: center;
+      }
+      #ceklokInputContainer .table-container tr { border-left: 3px solid var(--primary); }
+      #ceklokInputContainer .table-container td {
+          display: flex; justify-content: space-between; align-items: center;
+          text-align: left; padding: 10px 12px; border-bottom: 1px dotted #e0e0e0; position: static;
+      }
+      #ceklokInputContainer .table-container td:last-child { border-bottom: none; }
+      #ceklokInputContainer .table-container td::before {
+          float: none; flex-basis: 110px; flex-shrink: 0;
+          font-weight: 500; color: var(--grey-text); margin-right: 8px;
+      }
+      #ceklokInputContainer .table-container td select.inline-select {
+        flex-grow: 1; width: auto; max-width: 250px; padding: 9px 10px; font-size: 1em;
+      }
+      #ceklokInputContainer .table-container td[data-label="Hari"]::before,
+      #ceklokInputContainer .table-container td[data-label="Tanggal"]::before { font-weight: bold; color: var(--primary); }
+      #ceklokInputContainer .table-container td[data-label="Hari"],
+      #ceklokInputContainer .table-container td[data-label="Tanggal"] {
+          font-weight: bold; background-color: #f9f9f9; padding-top: 12px; padding-bottom: 12px;
+      }
+      #ceklokInputContainer .table-container td[data-label="Data Masuk"],
+      #ceklokInputContainer .table-container td[data-label="Data Pulang"] { color: var(--secondary); font-weight: 500; }
+      #ceklokInputContainer .table-container td input.inline-input {
+          flex-grow: 1; width: auto; max-width: 120px; padding: 9px 10px; text-align: center;
+          border: 1px solid var(--border-color); border-radius: 5px; font-size: 1em;
+      }
+      #ceklokInputContainer .table-container td input.inline-input:focus {
+          border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(0,102,204,.25);
+      }
+      #ceklokInputContainer .table-container tr.libur-row { background-color: #fff5f5 !important; border-left-color: var(--danger); }
+      #ceklokInputContainer .table-container tr.libur-row td[data-label="Hari"],
+      #ceklokInputContainer .table-container tr.libur-row td[data-label="Tanggal"],
+      #ceklokInputContainer .table-container tr.libur-row td.libur-text {
+          color: var(--danger); font-weight: bold; background-color: #fff5f5;
+      }
+      #ceklokInputContainer .table-container tr.libur-row td[data-label="Data Masuk"],
+      #ceklokInputContainer .table-container tr.libur-row td[data-label="Data Pulang"] { color: var(--danger); }
+      #ceklokInputContainer .table-container tr.libur-row td.libur-note {
+          display: block; padding: 10px 12px; background-color: transparent;
+      }
+      #ceklokInputContainer .table-container tr.libur-row td.libur-note::before {
+          display: block; flex-basis: auto; margin-bottom: 6px; font-weight: bold; color: var(--danger);
+      }
+      #ceklokInputContainer .table-container tr.libur-row td.libur-note span.holiday-description {
+          display: block; font-style: italic; color: var(--danger); text-align: left; line-height: 1.4;
+      }
+    }
+
+    #loading { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,.85); z-index:9999; display:none;
+      align-items:center; justify-content:center; flex-direction:column;
+    }
+    .spinner { border:8px solid #f3f3f3; border-top:8px solid var(--primary); border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; }
+    #loading p { margin-top:15px; font-size:16px; color:var(--primary); font-weight:500; }
+    @keyframes spin { 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
+
+    .error-message {
+      font-size:.9em; color:var(--danger); margin-top: 5px; margin-bottom: 10px; display:block; text-align:left;
+      padding: 8px; background-color: #ffebee; border: 1px solid var(--danger); border-radius: 4px;
+    }
+    .error-message.inline-form-error { margin-bottom: 15px; }
+    .input-error { border:1px solid var(--danger) !important; background:#fff0f0; }
+
+    .libur-text { color:var(--danger); font-weight: bold; }
+    .libur-note { text-align:left !important; color:var(--danger); font-style: italic; }
+
+    .form-column {
+      display: flex; flex-direction: column; gap: 15px;
+      max-width: 500px;
+      margin: 20px auto; padding: 25px;
+      background-color: var(--white); border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-top: 5px solid var(--primary);
+    }
+    .form-column h2 { margin-bottom: 20px; font-size: 1.6em; }
+    .form-column h3 { margin-bottom: 18px; font-size: 1.2em; color: var(--secondary); }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group input, .form-group select, .form-group textarea { margin-bottom: 0; }
+    .form-group small { font-size: 0.8em; color: var(--grey-text); margin-top: 3px; }
+
+    .form-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .form-row label {
+        flex: 0 0 150px;
+        margin-bottom: 0;
+        text-align: right;
+        padding-right: 5px;
+    }
+    .form-row .input-wrapper {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .form-row .input-wrapper input[type="text"],
+    .form-row .input-wrapper input[type="month"],
+    .form-row .input-wrapper select {
+        margin-bottom: 0;
+    }
+    .form-row-note {
+        padding-left: 165px;
+        font-size:0.85em;
+        color:var(--grey-text);
+        display:block;
+        margin-top:-10px;
+        margin-bottom: 10px;
+    }
+
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+        padding-right: 45px !important;
+        margin-bottom:0 !important;
+    }
+    .toggle-password-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        user-select: none;
+        color: var(--grey-text);
+        transition: color 0.2s;
+        display: inline-flex;
+        align-items: center;
+    }
+    .toggle-password-icon:hover { color: var(--primary); }
+
+    footer {
+      background-color: var(--primary); color: var(--white);
+      text-align: center; padding: 12px 20px; width: 100%;
+      box-sizing: border-box; position: fixed; bottom: 0; left: 0; z-index: 1000;
+    }
+    footer p { margin: 0; font-size: 0.85em; }
+
+    .kalender-form-container, .kalender-list-container {
+      margin-top: 20px; padding: 20px; background-color: var(--white);
+      border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .kalender-form-container h3, .kalender-list-container h3 {
+        margin-top: 0; color: var(--primary);
+        border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;
+    }
+
+    .custom-alert {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out, top 0.3s ease-in-out;
+        font-size: 0.95em;
+        text-align: center;
+        min-width: 250px;
+        max-width: 90%;
+    }
+    .custom-alert.show { opacity: 1; top: 60px; } /* Adjusted top to not overlap with profile menu */
+    .custom-alert.error { background-color: var(--danger); }
+    .custom-alert.success { background-color: var(--success); }
+
+    @media (max-width: 600px) {
+        .form-column { gap: 12px; padding: 20px; }
+        .form-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+        .form-row label {
+            flex-basis: auto;
+            text-align: left;
+            padding-right: 0;
+            margin-bottom: 3px;
+        }
+        .form-row .input-wrapper { width: 100%; }
+        .form-row .input-wrapper input[type="text"],
+        .form-row .input-wrapper input[type="month"],
+        .form-row .input-wrapper select { width: 100%; }
+        .form-row .input-wrapper button {
+            margin-left: 0 !important;
+            margin-top: 8px !important;
+            width: 100%;
+        }
+        .form-row-note { padding-left: 0; width: 100%; text-align: left; margin-top: 0;}
+    }
+    .table-container { overflow-x: auto; }
+
+    #ceklokInputContainer .table-container th:nth-child(5),
+    #ceklokInputContainer .table-container th:nth-child(6) { width: 18%; }
+    #ceklokInputContainer .table-container th:nth-child(7) { width: 24%; }
+    #ceklokInputContainer .table-container td .inline-input,
+    #ceklokInputContainer .table-container td .inline-select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20000; /* Make sure modals are above profile menu */
+    }
+
+    .modal-content {
+      background-color: var(--white);
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 450px; 
+      position: relative;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: var(--primary);
+      text-align: center;
+    }
+    .modal-content p {
+      margin-bottom: 20px;
+      font-size: 0.9em;
+      color: var(--grey-text);
+      line-height: 1.5;
+    }
+
+    .modal-close-button {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close-button:hover {
+      color: #333;
+    }
+
+    .modal-content .form-group {
+      margin-bottom: 20px;
+    }
+    .modal-content .form-group label {
+      margin-bottom: 8px; 
+    }
+    .modal-content .form-group input[type="email"] {
+      margin-bottom: 5px; 
+    }
+
+    /* CSS Baru untuk Profile Menu */
+    #profileMenuContainer {
+      position: fixed;
+      top: 10px; 
+      right: 15px; 
+      z-index: 10001; 
+      display: none; 
+    }
+
+    #profileIconTrigger { 
+      cursor: pointer;
+      padding: 8px; 
+      background-color: var(--white); 
+      border-radius: 50%; 
+      display: flex;
+      align-items: center;
+      justify-content: center; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border-color);
+      transition: background-color 0.2s;
+      width: 40px; 
+      height: 40px; 
+    }
+
+    #profileIconTrigger .profile-svg-icon {
+      width: 24px; 
+      height: 24px;
+      fill: var(--primary); 
+    }
+
+    #profileIconTrigger:hover {
+        background-color: var(--accent);
+    }
+
+    .profile-dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px); 
+      background-color: var(--white);
+      min-width: 230px; 
+      box-shadow: 0px 6px 12px rgba(0,0,0,0.15);
+      z-index: 1; 
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      padding-top: 8px; 
+      padding-bottom: 8px; 
+    }
+
+    #dropdownUsernameDisplay { /* Style untuk nama pengguna di dalam dropdown */
+      padding: 10px 18px;
+      font-weight: bold;
+      color: var(--secondary);
+      font-size: 1em;
+      border-bottom: 1px solid #eee; 
+      margin-bottom: 8px; 
+      text-align: center;
+    }
+
+    .profile-dropdown-content a {
+      color: var(--text);
+      padding: 10px 18px; 
+      text-decoration: none;
+      display: block;
+      font-size: 0.95em;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .profile-dropdown-content a:hover {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    #profileMenuContainer.show-dropdown .profile-dropdown-content {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="profileMenuContainer">
+    <div id="profileIconTrigger" tabindex="0"> 
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" class="profile-svg-icon">
+        <path d="M0 0h24v24H0V0z" fill="none"/>
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+    </div>
+    <div id="profileDropdown" class="profile-dropdown-content">
+      <div id="dropdownUsernameDisplay">Username</div> 
+      <a href="#" id="menuChangePrimaryEmail">Ganti Email Utama</a>
+      <a href="#" id="menuChangePassword">Ubah Password</a>
+      <a href="#" id="menuLogoutProfile">Logout</a>
+    </div>
+  </div>
+
+  <div id="app">
+    </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p id="loadingMessage">Memproses...</p>
+  </div>
+
+  <div id="customAlert" class="custom-alert">Pesan Alert</div>
+
+  <div id="changePasswordModal" style="display:none; position:fixed; z-index:20001; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
+    <div style="background-color:#fefefe; margin:10% auto; padding:20px; border:1px solid #888; width:80%; max-width:400px; border-radius:8px; position:relative;">
+      <span onclick="closeChangePasswordModal()" style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;" title="Tutup">&times;</span>
+      <h3>Ubah Password</h3>
+      <div class="form-group">
+        <label for="currentPassword">Password Lama:</label>
+        <input type="password" id="currentPassword" style="width: calc(100% - 24px);">
+      </div>
+      <div class="form-group">
+        <label for="newPassword">Password Baru:</label>
+        <input type="password" id="newPassword" style="width: calc(100% - 24px);">
+      </div>
+      <div class="form-group">
+        <label for="confirmNewPassword">Konfirmasi Password Baru:</label>
+        <input type="password" id="confirmNewPassword" style="width: calc(100% - 24px);">
+      </div>
+      <div id="changePasswordError" class="error-message" style="display:none; margin-bottom:15px;"></div>
+      <div class="btn-container">
+        <button onclick="submitChangePassword()">Simpan Perubahan</button>
+        <button onclick="closeChangePasswordModal()" style="background-color:#ccc; color:#333;">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="primaryEmailModal" class="modal-overlay" style="display:none; z-index: 20001;">
+    <div class="modal-content">
+      <span class="modal-close-button" onclick="closePrimaryEmailModal()">&times;</span>
+      
+      <div id="primaryEmailStep1">
+        <h3>Masukkan Email Utama Anda</h3>
+        <p>Email ini akan digunakan jika Anda lupa password dan dapat juga digunakan sebagai username untuk login di masa mendatang. Kode verifikasi akan dikirim ke email ini.</p>
+        <div class="form-group">
+          <label for="primaryEmailInput">Email:</label>
+          <input type="email" id="primaryEmailInput" placeholder="contoh@email.com">
+        </div>
+        <div id="primaryEmailStep1Error" class="error-message" style="display:none; margin-bottom: 15px;"></div>
+        <div class="btn-container">
+          <button id="btnRequestPrimaryEmailOTP" onclick="handleRequestPrimaryEmailOTP()">Kirim Kode Verifikasi</button>
+          <button id="btnSkipPrimaryEmail" onclick="closePrimaryEmailModal()" style="background-color: #777;">Nanti Saja</button>
+        </div>
+      </div>
+
+      <div id="primaryEmailStep2" style="display:none;">
+        <h3>Verifikasi Email Anda</h3>
+        <p>Kode OTP telah dikirim ke <strong id="otpSentToPrimaryEmailDisplay">emailanda@contoh.com</strong>. Silakan periksa folder inbox atau spam.</p>
+        <p style="font-size:0.9em; color:var(--grey-text);">OTP akan kedaluwarsa dalam <span id="primaryEmailOtpTimer">10:00</span> menit.</p>
+        <div class="form-group">
+          <label for="primaryEmailOtpInput">Kode OTP (6 digit):</label>
+          <input type="text" id="primaryEmailOtpInput" maxlength="6" pattern="\d{6}" inputmode="numeric">
+        </div>
+        <div id="primaryEmailStep2Error" class="error-message" style="display:none; margin-bottom: 15px;"></div>
+        <div class="btn-container">
+          <button id="btnVerifyAndSavePrimaryEmail" onclick="handleVerifyAndSavePrimaryEmail()">Verifikasi & Simpan Email</button>
+          <button type="button" onclick="showPrimaryEmailStep1()" style="background-color: #aaa; font-size:0.9em;">Kembali / Kirim Ulang OTP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="changePrimaryEmailModal" class="modal-overlay" style="display:none; z-index: 20001;">
+    <div class="modal-content">
+      <span class="modal-close-button" onclick="closeChangePrimaryEmailModal()">&times;</span>
+      <h3 id="changeEmailModalTitle">Ubah Email Utama Anda</h3>
+
+      <div id="changeEmailStep1">
+        <p>Email utama Anda saat ini: <strong id="currentPrimaryEmailDisplay">memuat...</strong></p>
+        <p>Masukkan alamat email baru yang ingin Anda gunakan. Kode verifikasi akan dikirim ke alamat email Anda yang LAMA (<span id="currentPrimaryEmailForOtp" style="font-weight:bold;"></span>) untuk mengonfirmasi perubahan ini.</p>
+        <div class="form-group">
+          <label for="newPrimaryEmailInput">Email Baru:</label>
+          <input type="email" id="newPrimaryEmailInput" placeholder="emailbaru@contoh.com">
+        </div>
+        <div id="changeEmailStep1Error" class="error-message" style="display:none; margin-bottom: 15px;"></div>
+        <div class="btn-container">
+          <button id="btnSendChangeEmailOTP" onclick="handleSendChangeEmailOTP()">Kirim Kode Verifikasi</button>
+          <button type="button" onclick="closeChangePrimaryEmailModal()" style="background-color: #777;">Batal</button>
+        </div>
+      </div>
+
+      <div id="changeEmailStep2" style="display:none;">
+        <p>Sebuah kode OTP telah dikirim ke email lama Anda (<strong id="otpSentToEmailDisplay"></strong>). Masukkan kode tersebut di bawah ini untuk memverifikasi dan mengganti email Anda menjadi <strong id="newProposedEmailDisplay"></strong>.</p>
+        <p style="font-size:0.9em; color:var(--grey-text);">OTP akan kedaluwarsa dalam <span id="changeEmailOtpTimer">10:00</span> menit.</p>
+        <div class="form-group">
+          <label for="changeEmailOtpInput">Kode OTP (6 digit):</label>
+          <input type="text" id="changeEmailOtpInput" maxlength="6" pattern="\d{6}" inputmode="numeric">
+        </div>
+        <div id="changeEmailStep2Error" class="error-message" style="display:none; margin-bottom: 15px;"></div>
+        <div class="btn-container">
+          <button id="btnVerifyAndSaveNewEmail" onclick="handleVerifyAndSaveNewEmail()">Verifikasi & Ganti Email</button>
+          <button type="button" onclick="openChangePrimaryEmailModal(true)" style="background-color: #aaa; font-size:0.9em;">Kembali / Kirim Ulang OTP</button> 
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; <span id="currentYear">2024</span> Created by Syamsul Bahri</p>
+  </footer>
+
+  <script>
+    // Variabel global
+    let loggedInUser = null;
+    let namaGuru = ''; 
+    let dataTanggal = []; 
+    let allTeachersList = [];
+    let currentView = '';
+    let currentLockIdValue = null;
+    let currentBackupSheetName = null;
+
+    let idleTimer = null;
+    const IDLE_TIMEOUT_MS = 5 * 60 * 1000; 
+
+    let globalServerCurrentMonthYear = null; 
+    let globalAdminMinMonthYear = null;     
+    let activeCeklokMonthYear = null;       
+    let activeRekapMonthYear = null; 
+
+    let usernameForReset = null;
+    let otpTimerInterval = null; 
+
+    let proposedNewPrimaryEmail = null;
+    let changeEmailOtpTimerInterval = null; 
+    const CHANGE_EMAIL_OTP_EXPIRY_MINUTES = 10;
+
+    // Tambahkan bersama variabel global lainnya
+    let primaryEmailOtpTimerInterval = null;
+    let emailForPrimaryVerification = null; // Untuk menyimpan email yang sedang diverifikasi
+    const PRIMARY_EMAIL_OTP_EXPIRY_MINUTES = 10;
+
+    function showAlert(message, type = 'info', duration = 3500) {
+        const alertBox = document.getElementById('customAlert');
+        if (!alertBox) return;
+        alertBox.textContent = message;
+        alertBox.className = 'custom-alert';
+        if (type === 'error') alertBox.classList.add('error');
+        else if (type === 'success') alertBox.classList.add('success');
+        alertBox.classList.add('show');
+        setTimeout(() => { alertBox.classList.remove('show'); }, duration);
+    }
+    function showLoading(message = "Memproses...") {
+        const loadingEl = document.getElementById("loading");
+        const loadingMsgEl = document.getElementById("loadingMessage");
+        if (loadingMsgEl) loadingMsgEl.textContent = message;
+        if (loadingEl) loadingEl.style.display = "flex";
+    }
+    function hideLoading() { 
+        const loadingEl = document.getElementById("loading");
+        if (loadingEl) loadingEl.style.display = "none"; 
+    }
+    function isValidJamFormat(j_input) {
+        if (!j_input) return true;
+        const m = j_input.match(/^(\d{1,2})[:.](\d{1,2})$/);
+        if (!m) return false;
+        const h = parseInt(m[1], 10); const mn = parseInt(m[2], 10);
+        return h >= 0 && h < 24 && mn >= 0 && mn < 60;
+    }
+    function normalizeJamFormat(j_input) {
+        if (!j_input) return '';
+        const m = j_input.match(/^(\d{1,2})[:.](\d{1,2})$/);
+        if (!m) return j_input;
+        const h = String(m[1]).padStart(2, '0'); const mn = String(m[2]).padStart(2, '0');
+        return `${h}.${mn}`;
+    }
+    function showInlineError(containerId, message) {
+        const el = document.getElementById(containerId);
+        if (el) { el.textContent = message; el.style.display = 'block'; }
+    }
+    function clearInlineError(containerId) {
+        const el = document.getElementById(containerId);
+        if (el) { el.textContent = ''; el.style.display = 'none'; }
+    }
+    function clearInputError(...inputElements) {
+        inputElements.forEach(inputElement => {
+            if(inputElement) inputElement.classList.remove('input-error');
+        });
+    }
+    function showInputError(inputElement) {
+        if(inputElement) inputElement.classList.add('input-error');
+    }
+
+    function convertMMYYYYtoYYYYMM(mm_yyyy) { 
+        if (!mm_yyyy || !mm_yyyy.includes('/')) return "";
+        const parts = mm_yyyy.split('/');
+        if (parts.length !== 2) return "";
+        return `${parts[1]}-${parts[0]}`;
+    }
+
+    function convertYYYYMMtoMMYYYY(yyyy_mm) { 
+        if (!yyyy_mm || !yyyy_mm.includes('-')) return "";
+        const parts = yyyy_mm.split('-');
+        if (parts.length !== 2) return "";
+        return `${parts[1]}/${parts[0]}`;
+    }
+    
+    function loadHtmlContent(filename, targetElementId, callback, dataForRender) {
+        showLoading("Memuat tampilan...");
+        google.script.run
+            .withSuccessHandler(html => {
+                const target = document.getElementById(targetElementId);
+                if (target) {
+                    target.innerHTML = html;
+                    if (callback) callback(dataForRender);
+                } else {
+                    showAlert(`Error: Target elemen '${targetElementId}' tidak ditemukan.`, 'error');
+                }
+                hideLoading();
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Gagal memuat ${filename}: ${err.message}`, 'error');
+                const target = document.getElementById(targetElementId);
+                if (target) target.innerHTML = `<div class="container"><p style="color:red;">Gagal memuat tampilan. Silakan coba lagi.</p><button onclick="renderView('login')">Kembali ke Login</button></div>`;
+            })
+            .getHtmlContent(filename);
+    }
+
+    function renderView(viewName, data, postRenderCallback) {
+        console.log("Merender tampilan:", viewName, "dengan data:", data);
+        currentView = viewName;
+        document.body.classList.remove('login-active');
+
+        let targetElementId = 'app';
+        let htmlFile = '';
+        let setupFunction = null;
+
+        if (viewName === 'login') {
+            document.body.classList.add('login-active');
+        }
+
+
+        switch(viewName) {
+            case 'login':
+                htmlFile = 'login_form.html';
+                setupFunction = setupLoginFormEventListeners;
+                break;
+            case 'admin_dashboard':
+                htmlFile = 'admin_dashboard_content.html';
+                setupFunction = setupAdminDashboardView;
+                break;
+            case 'ceklok_table':
+                htmlFile = 'ceklok_table_content.html';
+                setupFunction = setupCeklokTableView;
+                break;
+            case 'user_management':
+                htmlFile = 'user_management_content.html';
+                setupFunction = setupUserManagementView;
+                break;
+            case 'teacher_management':
+                htmlFile = 'teacher_management_content.html';
+                setupFunction = setupTeacherManagementView;
+                break;
+            case 'kalender_pendidikan':
+                htmlFile = 'kalender_pendidikan_content.html';
+                setupFunction = setupKalenderPendidikanView;
+                break;
+            case 'hasil_ceklok':
+                htmlFile = 'hasil_ceklok_content.html';
+                setupFunction = setupHasilCeklokView;
+                break;
+            default:
+                console.error("Tampilan tidak dikenal:", viewName);
+                const appEl = document.getElementById('app');
+                if (appEl) appEl.innerHTML = '<p>Tampilan tidak ditemukan: ' + viewName + '</p>';
+                hideLoading();
+                return;
+        }
+
+        if (htmlFile) {
+            loadHtmlContent(htmlFile, targetElementId, (dataForSetupFunction) => {
+                if (setupFunction) {
+                    console.log("Menjalankan setupFunction untuk", viewName);
+                    setupFunction(dataForSetupFunction);
+                }
+                // console.log("Memperbarui visibilitas tombol Google untuk view:", viewName); // Fungsi ini sudah tidak ada
+                // updateGoogleLinkButtonVisibility(); // Fungsi ini sudah tidak ada
+                if (postRenderCallback) {
+                    postRenderCallback();
+                }
+            }, data);
+        }
+    }
+
+    function toggleProfileDropdown() {
+      const profileMenuContainer = document.getElementById('profileMenuContainer');
+      if (profileMenuContainer) {
+        profileMenuContainer.classList.toggle('show-dropdown');
+      }
+    }
+
+    function setupProfileMenuEventListeners() {
+      const profileIconTrigger = document.getElementById('profileIconTrigger');
+      if (profileIconTrigger) {
+        profileIconTrigger.onclick = function(event) {
+          event.stopPropagation(); 
+          toggleProfileDropdown();
+        };
+        profileIconTrigger.onkeydown = function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleProfileDropdown();
+          }
+        };
+      }
+
+      const menuChangePrimaryEmail = document.getElementById('menuChangePrimaryEmail');
+      if (menuChangePrimaryEmail) {
+        menuChangePrimaryEmail.onclick = function(e) {
+          e.preventDefault();
+          const profileMenuContainer = document.getElementById('profileMenuContainer');
+          if (loggedInUser && loggedInUser.primaryEmail) {
+            openChangePrimaryEmailModal(); 
+          } else {
+            showAlert("Anda belum memiliki Email Utama. Silakan atur terlebih dahulu.", "warning");
+            openPrimaryEmailModal(); 
+          }
+          if (profileMenuContainer) profileMenuContainer.classList.remove('show-dropdown');
+        };
+      }
+
+      const menuChangePassword = document.getElementById('menuChangePassword');
+      if (menuChangePassword) {
+        menuChangePassword.onclick = function(e) {
+          e.preventDefault();
+          openChangePasswordModal(); 
+          const profileMenuContainer = document.getElementById('profileMenuContainer');
+          if (profileMenuContainer) profileMenuContainer.classList.remove('show-dropdown');
+        };
+      }
+
+      const menuLogoutProfile = document.getElementById('menuLogoutProfile');
+      if (menuLogoutProfile) {
+          menuLogoutProfile.onclick = function(e) {
+              e.preventDefault();
+              const profileMenuContainer = document.getElementById('profileMenuContainer');
+              if (profileMenuContainer) profileMenuContainer.classList.remove('show-dropdown');
+              logout(); 
+          };
+      }
+    }
+
+    function closeProfileDropdownOnClickOutside() {
+        window.addEventListener('click', function(event) {
+            const profileMenuContainer = document.getElementById('profileMenuContainer');
+            const profileIconTrigger = document.getElementById('profileIconTrigger');
+            // Pastikan elemen ada sebelum mengakses contains
+            if (profileMenuContainer && profileIconTrigger && document.getElementById('profileDropdown') && profileMenuContainer.classList.contains('show-dropdown')) {
+              if (!profileIconTrigger.contains(event.target) && !document.getElementById('profileDropdown').contains(event.target)) {
+                profileMenuContainer.classList.remove('show-dropdown');
+              }
+            }
+        });
+    }
+
+    function closeProfileDropdownOnEscape() {
+        document.addEventListener('keydown', function(event) {
+            const profileMenuContainer = document.getElementById('profileMenuContainer');
+            if (event.key === "Escape" || event.key === "Esc") {
+              if (profileMenuContainer && profileMenuContainer.classList.contains('show-dropdown')) {
+                profileMenuContainer.classList.remove('show-dropdown');
+              }
+            }
+        });
+    }
+
+
+    function setupLoginFormEventListeners() {
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordButton = document.getElementById('togglePassword');
+        const loginButton = document.getElementById('loginButton');
+
+        if (loginButton) {
+            loginButton.onclick = handleLogin;
+        }
+
+        if (usernameInput) {
+            usernameInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    const forgotPasswordContainer = document.getElementById('forgotPasswordContainer');
+                    const resetPasswordContainer = document.getElementById('resetPasswordContainer');
+                    if (
+                        (!forgotPasswordContainer || forgotPasswordContainer.style.display === 'none') &&
+                        (!resetPasswordContainer || resetPasswordContainer.style.display === 'none')
+                    ) {
+                        handleLogin();
+                    }
+                }
+            };
+        }
+        if (passwordInput) {
+            passwordInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    const mainLoginFields = document.getElementById('mainLoginFields');
+                    if (mainLoginFields && mainLoginFields.style.display !== 'none') {
+                        handleLogin();
+                    }
+                }
+            };
+        }
+
+        if (togglePasswordButton && passwordInput) {
+            const svgIconShowPassword = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+            const svgIconHidePassword = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+            
+            togglePasswordButton.onclick = () => {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    togglePasswordButton.innerHTML = svgIconHidePassword;
+                    togglePasswordButton.setAttribute('title', 'Sembunyikan password');
+                } else {
+                    passwordInput.type = 'password';
+                    togglePasswordButton.innerHTML = svgIconShowPassword;
+                    togglePasswordButton.setAttribute('title', 'Lihat password');
+                }
+            };
+        }
+        showLoginForm(); 
+        const footer = document.querySelector('footer');
+        if (footer) footer.style.display = 'block';
+        if (usernameInput) usernameInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+        const resetIdentifierInput = document.getElementById('resetIdentifierInput');
+        if (resetIdentifierInput) resetIdentifierInput.value = '';
+        const otpInput = document.getElementById('otpInput');
+        if (otpInput) otpInput.value = '';
+        const newPasswordResetInput = document.getElementById('newPasswordResetInput');
+        if (newPasswordResetInput) newPasswordResetInput.value = '';
+        const confirmNewPasswordResetInput = document.getElementById('confirmNewPasswordResetInput');
+        if (confirmNewPasswordResetInput) confirmNewPasswordResetInput.value = '';
+        if(usernameInput) usernameInput.focus();
+    }
+
+    function handleLogin() {
+        const usernameEl = document.getElementById('username');
+        const passwordEl = document.getElementById('password');
+        const loginErrorEl = document.getElementById('loginError');
+
+        clearInputError(usernameEl, passwordEl);
+        if (loginErrorEl) loginErrorEl.style.display = "none";
+
+        const username = usernameEl.value.trim();
+        const password = passwordEl.value;
+
+        let hasError = false;
+        if (!username) { showInputError(usernameEl); hasError = true; }
+        if (!password) { showInputError(passwordEl); hasError = true; }
+
+        if (hasError) {
+            if (loginErrorEl) { loginErrorEl.textContent = "Username dan password wajib diisi."; loginErrorEl.style.display = "block"; }
+            return;
+        }
+        showLoading("Memverifikasi login...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    loggedInUser = { username: response.username, role: response.role, teacherName: response.teacherName, googleEmail: response.googleEmail, primaryEmail: response.primaryEmail };
+                    try {
+                        sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
+                    } catch (e) {
+                        console.error("Failed to save user data to sessionStorage:", e);
+                    }
+                    document.body.classList.remove('login-active'); // Hapus kelas login-active dari body
+                    proceedAfterLogin(); 
+                } else {
+                    if (loginErrorEl) { loginErrorEl.textContent = response.error || "Login gagal."; loginErrorEl.style.display = "block"; }
+                    if (passwordEl) passwordEl.value = "";
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                if (loginErrorEl) { loginErrorEl.textContent = "Error server: " + err.message; loginErrorEl.style.display = "block"; }
+            })
+            .verifyLogin(username, password);
+    }
+
+    function logout() {
+      loggedInUser = null; namaGuru = ''; dataTanggal = []; allTeachersList = [];
+      currentLockIdValue = null; currentBackupSheetName = null;
+      globalServerCurrentMonthYear = null; globalAdminMinMonthYear = null; activeCeklokMonthYear = null;
+      activeRekapMonthYear = null; usernameForReset = null;
+      if(otpTimerInterval) clearInterval(otpTimerInterval);
+      otpTimerInterval = null;
+      if(changeEmailOtpTimerInterval) clearInterval(changeEmailOtpTimerInterval);
+      changeEmailOtpTimerInterval = null;
+      proposedNewPrimaryEmail = null;
+      
+      // Di dalam fungsi logout()
+      const dropdownUsernameDisplayEl = document.getElementById('dropdownUsernameDisplay');
+      if (dropdownUsernameDisplayEl) {
+          dropdownUsernameDisplayEl.textContent = ''; 
+      }
+      // ... (sisa kode logout Anda, termasuk menyembunyikan profileMenuContainer) ...
+      const profileMenuContainer = document.getElementById('profileMenuContainer');
+      if (profileMenuContainer) {
+        profileMenuContainer.style.display = 'none';
+        profileMenuContainer.classList.remove('show-dropdown'); 
+      }
+
+      sessionStorage.removeItem('loggedInUserData');
+      clearTimeout(idleTimer);
+      removeIdleListeners();
+      document.body.classList.add('login-active'); // Tambahkan kelas login-active ke body
+      renderView('login');
+      window.scrollTo(0, 0);
+      showAlert("Anda telah logout.", "info", 2000);
+    }
+
+    function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(logoutDueToIdle, IDLE_TIMEOUT_MS);
+    }
+    function logoutDueToIdle() {
+        console.log("Idle timeout reached.");
+        showAlert("Sesi Anda berakhir karena tidak aktif. Silakan login kembali.", "warning", 5000);
+        logout();
+    }
+    function setupIdleTimer() {
+        console.log("Setting up idle timer and listeners.");
+        removeIdleListeners();
+        window.addEventListener('mousemove', resetIdleTimer);
+        window.addEventListener('mousedown', resetIdleTimer);
+        window.addEventListener('keypress', resetIdleTimer);
+        window.addEventListener('scroll', resetIdleTimer, true);
+        window.addEventListener('touchstart', resetIdleTimer);
+        resetIdleTimer();
+    }
+    function removeIdleListeners() {
+        console.log("Removing idle listeners.");
+        window.removeEventListener('mousemove', resetIdleTimer);
+        window.removeEventListener('mousedown', resetIdleTimer);
+        window.removeEventListener('keypress', resetIdleTimer);
+        window.removeEventListener('scroll', resetIdleTimer, true);
+        window.removeEventListener('touchstart', resetIdleTimer);
+    }
+
+    function proceedAfterLogin() {
+        if (!loggedInUser) {
+            renderView('login');
+            return;
+        }
+        setupIdleTimer();
+        const profileMenuContainer = document.getElementById('profileMenuContainer');
+        const dropdownUsernameDisplayEl = document.getElementById('dropdownUsernameDisplay'); // Ganti ke elemen baru
+        if (profileMenuContainer) {
+            profileMenuContainer.style.display = 'block'; 
+        }
+        if (dropdownUsernameDisplayEl && loggedInUser && loggedInUser.username) { // Update elemen ini
+            dropdownUsernameDisplayEl.textContent = loggedInUser.username;
+        }
+
+        setupProfileMenuEventListeners(); // Panggil fungsi setup listener (akan dibuat di bawah)
+        // Listener untuk klik di luar dan Escape key sebaiknya di-setup sekali saja global, misal di window.onload
+        
+        setupProfileMenuEventListeners();
+        closeProfileDropdownOnClickOutside(); // Panggil setup untuk menutup dropdown
+        closeProfileDropdownOnEscape();
+
+        showLoading("Memuat data aplikasi...");
+        google.script.run
+            .withSuccessHandler(settingsResponse => {
+                 if (settingsResponse.error || !settingsResponse.success) {
+                    hideLoading(); 
+                    showAlert(`Error pengaturan tanggal: ${settingsResponse.error || 'Data tidak valid.'}`, 'error');
+                    logout(); 
+                    return;
+                }
+                globalAdminMinMonthYear = settingsResponse.adminDefinedMinMonthYear;
+                globalServerCurrentMonthYear = settingsResponse.serverCurrentMonthYear;
+                activeCeklokMonthYear = globalServerCurrentMonthYear; 
+
+                if (loggedInUser.role === "admin") {
+                    google.script.run
+                        .withSuccessHandler(response => { 
+                            hideLoading(); 
+                            if (response.error) { showAlert(`Error Inisialisasi Admin: ${response.error}`, 'error'); logout(); return; }
+                            allTeachersList = response.guruList || [];
+                            renderView('admin_dashboard', {
+                                guruList: allTeachersList,
+                                adminDefinedMinMonthYearDisplay: response.adminDefinedMinMonthYear
+                            }, () => { 
+                                if (!loggedInUser.primaryEmail) { openPrimaryEmailModal(); }
+                            });
+                        })
+                        .withFailureHandler(err => { hideLoading(); showAlert(`Gagal memuat data awal admin: ${err.message}`, 'error'); logout(); })
+                        .getInitialData();
+                } else if (loggedInUser.role === "user" && loggedInUser.teacherName) {
+                    namaGuru = loggedInUser.teacherName;
+                    loadCeklokDataFromServer(namaGuru, activeCeklokMonthYear, true, () => {
+                        if (!loggedInUser.primaryEmail) { openPrimaryEmailModal(); }
+                    });
+                } else {
+                    hideLoading();
+                    showAlert("Peran pengguna tidak valid atau data guru tidak lengkap.", 'error');
+                    logout();
+                }
+                // updateGoogleLinkButtonVisibility(); // Fungsi ini sudah tidak ada
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Gagal mengambil pengaturan tanggal server: ${err.message}`, 'error');
+                logout();
+            })
+            .getCeklokInputSettings();
+    }
+
+    function loadCeklokDataFromServer(teacherName, monthYearToLoad, isUserRoleView, postRenderCallback) { 
+        showLoading(`Memuat data ceklok...`);
+        google.script.run
+            .withSuccessHandler(ceklokResponse => {
+                hideLoading();
+                if (ceklokResponse.error) {
+                    showAlert(`Error data ceklok: ${ceklokResponse.error}`, 'error');
+                    const tableBody = document.getElementById('ceklokTableBody');
+                    if (tableBody) tableBody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">${ceklokResponse.error}</td></tr>`;
+                    const bulanTahunDisplayEl = document.getElementById('ceklokBulanTahunDisplay');
+                    if(bulanTahunDisplayEl) bulanTahunDisplayEl.textContent = monthYearToLoad;
+                    return;
+                }
+                dataTanggal = ceklokResponse.data;
+                const ketLiburOptions = ceklokResponse.optionsKeteranganLibur;
+                activeCeklokMonthYear = monthYearToLoad; 
+
+                renderView('ceklok_table', {
+                    rows: dataTanggal,
+                    options: ketLiburOptions,
+                    isUserRole: isUserRoleView,
+                    currentMonthYearForDisplay: activeCeklokMonthYear
+                }, postRenderCallback); 
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Gagal memuat data ceklok: ${err.message}`, 'error');
+            })
+            .getCeklokData(namaGuru, monthYearToLoad);
+    }
+
+    function setupModalEventListeners() {
+        const primaryEmailModal = document.getElementById('primaryEmailModal');
+        if (primaryEmailModal) {
+            primaryEmailModal.addEventListener('click', function(event) {
+                if (event.target === primaryEmailModal) {
+                    closePrimaryEmailModal();
+                }
+            });
+        }
+        const changeEmailModal = document.getElementById('changePrimaryEmailModal');
+        if (changeEmailModal) {
+            changeEmailModal.addEventListener('click', function(event) {
+                if (event.target === changeEmailModal) {
+                    closeChangePrimaryEmailModal();
+                }
+            });
+        }
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" || event.key === "Esc") {
+                if (primaryEmailModal && primaryEmailModal.style.display === 'flex') {
+                    closePrimaryEmailModal();
+                }
+                if (changeEmailModal && changeEmailModal.style.display === 'flex') {
+                    closeChangePrimaryEmailModal();
+                }
+                const changePasswordModal = document.getElementById('changePasswordModal');
+                if (changePasswordModal && changePasswordModal.style.display === 'block') { 
+                    closeChangePasswordModal();
+                }
+                 const profileMenuContainer = document.getElementById('profileMenuContainer');
+                if (profileMenuContainer && profileMenuContainer.classList.contains('show-dropdown')) {
+                    profileMenuContainer.classList.remove('show-dropdown');
+                }
+            }
+        });
+    }
+
+    function setupAdminDashboardView(data) {
+        const namaSelect = document.getElementById('namaAdminSelect');
+        if (namaSelect) {
+            let guruOptionsHtml = data.guruList && data.guruList.length > 0 ?
+                data.guruList.map(n => `<option value="${n}">${n}</option>`).join('') :
+                '<option value="" disabled>Tidak ada data guru</option>';
+            namaSelect.innerHTML = `<option disabled selected value="">-- Pilih Nama Guru --</option>${guruOptionsHtml}`;
+            namaSelect.disabled = !(data.guruList && data.guruList.length > 0);
+        }
+
+        const bulanAdminInputEl = document.getElementById('bulanAdminInput');
+        if (bulanAdminInputEl) {
+            bulanAdminInputEl.value = data.adminDefinedMinMonthYearDisplay || '';
+            const labelBulanAdmin = document.querySelector('label[for="bulanAdminInput"]');
+            if (labelBulanAdmin) labelBulanAdmin.textContent = "Batas Bawah Periode Ceklok (A1):";
+        }
+
+        const nextBtn = document.getElementById('btnNextCeklokGuru');
+        if(nextBtn) nextBtn.disabled = !(data.guruList && data.guruList.length > 0);
+
+        window.scrollTo(0, 0);
+        const loginHistoryTableBody = document.getElementById('loginHistoryTableBody');
+        if (loginHistoryTableBody) {
+            loginHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px;">Memuat histori login...</td></tr>`;
+        }
+
+        google.script.run
+            .withSuccessHandler(historyResponse => {
+                if (!loginHistoryTableBody) return;
+
+                if (historyResponse.success) {
+                    const historyEntries = historyResponse.history;
+                    if (historyEntries && historyEntries.length > 0) {
+                        let tableHtml = '';
+                        historyEntries.forEach(entry => {
+                            tableHtml += `<tr>
+                                <td data-label="Waktu Login">${entry.timestamp || '-'}</td>
+                                <td data-label="Pengguna">${entry.username || '-'}</td>
+                                <td data-label="Nama Guru">${entry.teacherName || '-'}</td>
+                            </tr>`;
+                        });
+                        loginHistoryTableBody.innerHTML = tableHtml;
+                    } else if (historyResponse.message) { 
+                        loginHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px;">${historyResponse.message}</td></tr>`;
+                    } 
+                    else {
+                        loginHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px;">Tidak ada histori login untuk ditampilkan.</td></tr>`;
+                    }
+                } else {
+                    const errorMsg = historyResponse.error || "Gagal memuat histori login.";
+                    loginHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px; color:red;">${errorMsg}</td></tr>`;
+                    showAlert(errorMsg, 'error');
+                }
+            })
+            .withFailureHandler(err => {
+                if (loginHistoryTableBody) {
+                    loginHistoryTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 15px; color:red;">Error server: ${err.message}</td></tr>`;
+                }
+                showAlert(`Gagal memuat histori login: ${err.message}`, 'error');
+            })
+            .getLoginHistory(); 
+    }
+
+    function handleAdminPilihGuru() {
+        const namaSelect = document.getElementById('namaAdminSelect');
+        if (!namaSelect || !namaSelect.value) { showAlert('Pilih nama guru dahulu.', 'error'); return; }
+        namaGuru = namaSelect.value;
+
+        if (!globalServerCurrentMonthYear) {
+            showAlert('Pengaturan bulan server tidak termuat. Coba refresh.', 'error'); return;
+        }
+        activeCeklokMonthYear = globalServerCurrentMonthYear; 
+        loadCeklokDataFromServer(namaGuru, activeCeklokMonthYear, false); 
+    }
+
+    function handleUpdateBulanTahunAdmin() {
+        const bulanAdminInputEl = document.getElementById('bulanAdminInput');
+        if (!bulanAdminInputEl) { showAlert("Elemen input Bulan/Tahun tidak ditemukan.", 'error'); return; }
+        const newBulanTahunValue = bulanAdminInputEl.value.trim();
+        clearInputError(bulanAdminInputEl);
+
+        if (!newBulanTahunValue) { showAlert("Batas Bawah Periode tidak boleh kosong.", 'error'); showInputError(bulanAdminInputEl); return; }
+        if (!/^(0[1-9]|1[0-2])\/(20\d{2}|21\d{2})$/.test(newBulanTahunValue)) {
+            showAlert("Format Batas Bawah Periode salah (mm/yyyy, tahun 2000-2199).", 'error'); showInputError(bulanAdminInputEl); return;
+        }
+        showLoading("Memperbarui Batas Bawah Periode Ceklok...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    showAlert(response.message, 'success');
+                    if(bulanAdminInputEl) bulanAdminInputEl.value = response.newBulanTahun;
+                    globalAdminMinMonthYear = response.newBulanTahun; 
+                } else { showAlert(response.error || "Gagal update.", 'error'); }
+            })
+            .withFailureHandler(err => { hideLoading(); showAlert(`Error server update: ${err.message}`, 'error'); })
+            .setBulanTahunSetting(newBulanTahunValue);
+    }
+
+    function goBackToAdminDashboard() {
+        if (loggedInUser && loggedInUser.role === 'admin') {
+             google.script.run
+                .withSuccessHandler(settingsResponse => {
+                    if (settingsResponse.error || !settingsResponse.success) { showAlert(`Gagal memuat setting: ${settingsResponse.error || 'Error'}`, 'error'); return; }
+                    globalAdminMinMonthYear = settingsResponse.adminDefinedMinMonthYear;
+                    globalServerCurrentMonthYear = settingsResponse.serverCurrentMonthYear;
+                    google.script.run
+                        .withSuccessHandler(response => {
+                            allTeachersList = response.guruList || [];
+                            renderView('admin_dashboard', {
+                                guruList: allTeachersList,
+                                adminDefinedMinMonthYearDisplay: response.adminDefinedMinMonthYear
+                            });
+                        })
+                        .getInitialData();
+                })
+                .getCeklokInputSettings();
+        } else {
+            logout(); 
+        }
+    }
+
+    function setupCeklokTableView(data) {
+        const { rows, options: ketLiburOptions, isUserRole, currentMonthYearForDisplay } = data;
+        const tableBody = document.getElementById('ceklokTableBody');
+        const guruNameEl = document.getElementById('ceklokGuruName');
+        const bulanTahunDisplayEl = document.getElementById('ceklokBulanTahunDisplay');
+        const ceklokBulanSelectEl = document.getElementById('ceklokBulanSelect'); 
+        const ceklokTahunSelectEl = document.getElementById('ceklokTahunSelect'); 
+        const btnKembaliContainer = document.getElementById('ceklokTombolKembaliContainer');
+
+        const emailDisplayDiv = document.getElementById('currentUserEmailDisplay');
+        const emailTextSpan = document.getElementById('userPrimaryEmailText');
+
+        if (emailDisplayDiv && emailTextSpan && loggedInUser && loggedInUser.primaryEmail) {
+            emailTextSpan.textContent = loggedInUser.primaryEmail;
+            emailDisplayDiv.style.display = 'block';
+            emailDisplayDiv.onclick = function() {
+                openChangePrimaryEmailModal();
+            };
+        } else if (emailDisplayDiv) {
+            emailDisplayDiv.style.display = 'none'; 
+        }
+
+        if (guruNameEl) guruNameEl.textContent = namaGuru;
+        if (bulanTahunDisplayEl) bulanTahunDisplayEl.textContent = currentMonthYearForDisplay || activeCeklokMonthYear || "Bulan belum dipilih";
+
+        if (ceklokBulanSelectEl && ceklokTahunSelectEl) {
+            const targetMonthYear = currentMonthYearForDisplay || activeCeklokMonthYear || globalServerCurrentMonthYear;
+            let defaultYear = getYearFromMMYYYY(targetMonthYear);
+            let defaultMonth = getMonthStrFromMMYYYY(targetMonthYear);
+
+            let minAllowedYear = getYearFromMMYYYY(globalAdminMinMonthYear);
+            let maxAllowedYear = getYearFromMMYYYY(globalServerCurrentMonthYear);
+
+            if (isNaN(minAllowedYear)) minAllowedYear = new Date().getFullYear() - 5; 
+            if (isNaN(maxAllowedYear)) maxAllowedYear = new Date().getFullYear();    
+            if (isNaN(defaultYear)) defaultYear = maxAllowedYear;
+            if (!defaultMonth || defaultMonth.length !== 2) defaultMonth = String(new Date().getMonth() + 1).padStart(2, '0');
+
+
+            populateYearSelect('ceklokTahunSelect', minAllowedYear, maxAllowedYear, defaultYear);
+            ceklokBulanSelectEl.value = defaultMonth;
+
+            ceklokTahunSelectEl.onchange = () => validateMonthRange('ceklokBulanSelect', 'ceklokTahunSelect');
+            ceklokBulanSelectEl.onchange = () => validateMonthRange('ceklokBulanSelect', 'ceklokTahunSelect'); 
+            validateMonthRange('ceklokBulanSelect', 'ceklokTahunSelect'); 
+        }
+
+        if (tableBody) {
+            let bodyHtml = '';
+            if (rows && rows.length > 0) {
+                rows.forEach((row, i) => {
+                    if (row.isLibur) {
+                        bodyHtml += `<tr class="libur-row">
+                            <td class="libur-text" data-label="Hari">${row.hari}</td>
+                            <td class="libur-text" data-label="Tanggal">${row.tanggal}</td>
+                            <td data-label="Data Masuk" style="text-align: center;">-</td>
+                            <td data-label="Data Pulang" style="text-align: center;">-</td>
+                            <td colspan="3" class="libur-note" data-label="Keterangan"><span class="holiday-description">${row.keterangan || 'Hari Libur'}</span></td>
+                        </tr>`;
+                    } else {
+                        let ketLiburDropdownHtml = `<select id="ketLiburManual${i}" class="inline-select ket-libur-manual-dropdown" data-rowindex="${i}">`;
+                        ketLiburDropdownHtml += '<option value="">-- Alasan Tidak Hadir --</option>';
+                        if (ketLiburOptions && ketLiburOptions.length > 0) {
+                            ketLiburOptions.forEach(opt => {
+                                const selected = (opt === row.keteranganLiburManual) ? 'selected' : '';
+                                ketLiburDropdownHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
+                            });
+                        }
+                        ketLiburDropdownHtml += '</select>';
+                        const isKetLiburManualSelected = row.keteranganLiburManual && row.keteranganLiburManual.trim() !== "";
+                        const jamMasukInputValue = isKetLiburManualSelected ? "" : (row.dataMasuk || "");
+                        const jamPulangInputValue = isKetLiburManualSelected ? "" : (row.dataPulang || "");
+
+                        bodyHtml += `<tr>
+                            <td data-label="Hari">${row.hari}</td>
+                            <td data-label="Tanggal">${row.tanggal}</td>
+                            <td data-label="Data Masuk" style="text-align: center;">${row.dataMasuk || '-'}</td>
+                            <td data-label="Data Pulang" style="text-align: center;">${row.dataPulang || '-'}</td>
+                            <td data-label="Input Jam Masuk"><input type="text" class="inline-input" id="jamMasuk${i}" placeholder="HH.MM" value="${jamMasukInputValue}" ${isKetLiburManualSelected ? 'disabled' : ''}></td>
+                            <td data-label="Input Jam Pulang"><input type="text" class="inline-input" id="jamPulang${i}" placeholder="HH.MM" value="${jamPulangInputValue}" ${isKetLiburManualSelected ? 'disabled' : ''}></td>
+                            <td data-label="Keterangan Libur/Alasan">${ketLiburDropdownHtml}</td>
+                        </tr>`;
+                    }
+                });
+            } else {
+                 bodyHtml = `<tr><td colspan="7" style="text-align:center;">Tidak ada data untuk periode ini atau periode belum dipilih.</td></tr>`;
+            }
+            tableBody.innerHTML = bodyHtml;
+            attachTimeInputValidationToCeklok();
+            attachKetLiburDropdownListeners();
+        }
+
+        if (btnKembaliContainer) {
+            btnKembaliContainer.style.display = isUserRole ? 'none' : 'inline-block';
+            if (!isUserRole) {
+                const btnBack = btnKembaliContainer.querySelector('button');
+                if (btnBack) btnBack.textContent = "Kembali ke Dashboard Admin";
+            }
+        }
+        setupLockIdAndExportClientFeatures();
+        window.scrollTo(0, 0);
+    }
+
+    function loadCeklokDataForSelectedMonth() {
+        const bulanSelectEl = document.getElementById('ceklokBulanSelect');
+        const tahunSelectEl = document.getElementById('ceklokTahunSelect');
+
+        if (!bulanSelectEl || !tahunSelectEl) {
+            showAlert("Elemen input bulan atau tahun tidak ditemukan.", "error"); return;
+        }
+        const selectedMonth = bulanSelectEl.value; 
+        const selectedYear = tahunSelectEl.value;  
+
+        if (!selectedMonth || !selectedYear) {
+            showAlert("Pilih bulan dan tahun terlebih dahulu.", "warning"); return;
+        }
+        if (bulanSelectEl.options[bulanSelectEl.selectedIndex].disabled) {
+            showAlert("Bulan yang dipilih tidak valid untuk tahun ini. Silakan pilih bulan lain.", "warning");
+            return;
+        }
+
+        const newActiveMonthYear = `${selectedMonth}/${selectedYear}`; 
+
+        const minYear = getYearFromMMYYYY(globalAdminMinMonthYear);
+        const minMonth = parseInt(getMonthStrFromMMYYYY(globalAdminMinMonthYear));
+        const maxYear = getYearFromMMYYYY(globalServerCurrentMonthYear);
+        const maxMonth = parseInt(getMonthStrFromMMYYYY(globalServerCurrentMonthYear));
+        const currentSelectedYear = parseInt(selectedYear);
+        const currentSelectedMonth = parseInt(selectedMonth);
+
+        if (currentSelectedYear < minYear || (currentSelectedYear === minYear && currentSelectedMonth < minMonth)) {
+            showAlert(`Periode tidak valid. Minimum adalah ${globalAdminMinMonthYear}.`, "error");
+            return;
+        }
+        if (currentSelectedYear > maxYear || (currentSelectedYear === maxYear && currentSelectedMonth > maxMonth)) {
+            showAlert(`Periode tidak valid. Maksimum adalah ${globalServerCurrentMonthYear}.`, "error");
+            return;
+        }
+
+        if (!namaGuru) {
+            showAlert("Nama guru tidak diset. Tidak bisa memuat data.", "error"); return;
+        }
+        loadCeklokDataFromServer(namaGuru, newActiveMonthYear, loggedInUser.role === 'user');
+    }
+
+
+    function attachTimeInputValidationToCeklok() {
+        const inputs = document.querySelectorAll('#ceklokTableBody input[type="text"]');
+        inputs.forEach(input => {
+            input.oninput = () => clearInputError(input); 
+            input.onblur = (e) => {
+                const v = e.target.value.trim();
+                clearInputError(input);
+                if (v && !isValidJamFormat(v)) {
+                    showInputError(input);
+                    showAlert('Format jam salah (HH.MM). Contoh: 07.30 atau 14.15.', 'error', 2000);
+                } else if (v) {
+                    e.target.value = normalizeJamFormat(v);
+                }
+            };
+        });
+    }
+
+    function attachKetLiburDropdownListeners() {
+        const dropdowns = document.querySelectorAll('.ket-libur-manual-dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.onchange = function() {
+                const rowIndex = this.dataset.rowindex; 
+                const jamMasukInput = document.getElementById(`jamMasuk${rowIndex}`);
+                const jamPulangInput = document.getElementById(`jamPulang${rowIndex}`);
+                const isKeteranganSelected = this.value !== ""; 
+
+                if (jamMasukInput) {
+                    jamMasukInput.disabled = isKeteranganSelected;
+                    if (isKeteranganSelected) jamMasukInput.value = ""; 
+                }
+                if (jamPulangInput) {
+                    jamPulangInput.disabled = isKeteranganSelected;
+                    if (isKeteranganSelected) jamPulangInput.value = "";
+                }
+            };
+        });
+    }
+
+    function submitCeklokData() {
+        let hasInvalidFormat = false;
+        const inputsToValidate = document.querySelectorAll('#ceklokTableBody input[type="text"]:not([disabled])');
+        inputsToValidate.forEach(input => { 
+             if (input.value.trim() && !isValidJamFormat(input.value.trim())) {
+                showInputError(input);
+                hasInvalidFormat = true;
+            }
+        });
+
+        if (hasInvalidFormat) { showAlert("Ada format jam yang salah. Perbaiki sebelum menyimpan.", 'error'); return; }
+
+        showLoading("Menyimpan data ceklok...");
+        const dataToSave = dataTanggal.map((row, i) => {
+            if (!row.isLibur) {
+                const jamMasukEl = document.getElementById(`jamMasuk${i}`);
+                const jamPulangEl = document.getElementById(`jamPulang${i}`);
+                const ketLiburManualEl = document.getElementById(`ketLiburManual${i}`);
+                let jamMasukVal = jamMasukEl ? jamMasukEl.value.trim() : '';
+                let jamPulangVal = jamPulangEl ? jamPulangEl.value.trim() : '';
+                const ketLiburManualVal = ketLiburManualEl ? ketLiburManualEl.value : '';
+                if (ketLiburManualVal && ketLiburManualVal !== "") {
+                    jamMasukVal = ""; jamPulangVal = "";
+                }
+                return { tanggal: row.tanggal, jamMasuk: jamMasukVal, jamPulang: jamPulangVal, keteranganLiburManual: ketLiburManualVal };
+            }
+            return null;
+        }).filter(item => item !== null);
+
+        if (!namaGuru || !activeCeklokMonthYear) { 
+            hideLoading();
+            showAlert("Error: Informasi guru atau periode bulan tidak lengkap untuk penyimpanan.", "error");
+            return;
+        }
+
+        google.script.run
+            .withSuccessHandler(msg => {
+                hideLoading();
+                const isError = String(msg).toLowerCase().startsWith("error:");
+                showAlert(msg, isError ? 'error' : 'success');
+                loadCeklokDataFromServer(namaGuru, activeCeklokMonthYear, loggedInUser.role === 'user');
+            })
+            .withFailureHandler(err => { hideLoading(); showAlert(`Gagal menyimpan: ${err.message}`, 'error'); })
+            .simpanData(namaGuru, dataToSave); 
+    }
+
+    function navigateToHasilCeklok() {
+        showLoading("Membuka halaman rekapitulasi...");
+        const monthToLoad = activeCeklokMonthYear || globalServerCurrentMonthYear;
+
+        renderView('hasil_ceklok', {
+            defaultMonthForRekap: monthToLoad 
+        });
+    }
+    
+    function setupHasilCeklokView(data) {
+        const rekapInfoBulanEl = document.getElementById('rekapInfoBulanTahun');
+        const rekapTableTheadEl = document.getElementById('rekapTableThead');
+        const rekapTableTbodyEl = document.getElementById('rekapTableTbody');
+        const rekapControlsContainer = document.getElementById('rekapControlsContainer');
+        const rekapBulanSelectEl = document.getElementById('rekapBulanSelect');
+        const rekapTahunSelectEl = document.getElementById('rekapTahunSelect');
+
+        if (!rekapInfoBulanEl || !rekapTableTheadEl || !rekapTableTbodyEl || !rekapControlsContainer || !rekapBulanSelectEl || !rekapTahunSelectEl) {
+            console.error("Elemen UI penting untuk rekap bulanan tidak ditemukan.");
+            showAlert("Gagal memuat komponen halaman rekap.", "error");
+            hideLoading();
+            return;
+        }
+        
+        // Jika ada data defaultMonthForRekap, gunakan itu, jika tidak, gunakan activeCeklokMonthYear, fallback ke globalServerCurrentMonthYear
+        const monthYearToLoad = data.defaultMonthForRekap || activeCeklokMonthYear || globalServerCurrentMonthYear;
+        activeRekapMonthYear = null;
+
+        if (monthYearToLoad && /^\d{2}\/\d{4}$/.test(monthYearToLoad)) {
+            rekapControlsContainer.style.display = 'none'; 
+            if(rekapInfoBulanEl) rekapInfoBulanEl.textContent = monthYearToLoad;
+            if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = "";
+            if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td colspan="1" style="text-align:center; padding:20px;">Memuat data rekap untuk ${monthYearToLoad}...</td></tr>`;
+            window.scrollTo(0, 0);
+            loadMonthlyRekap(monthYearToLoad);
+        } else {
+            hideLoading(); 
+            rekapControlsContainer.style.display = 'block'; 
+            showAlert("Periode default tidak dapat ditentukan. Silakan pilih periode manual.", "warning");
+            if(rekapInfoBulanEl) rekapInfoBulanEl.textContent = "Periode Belum Dipilih";
+            if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td colspan="1" style="text-align:center; padding:15px;">Silakan pilih Bulan dan Tahun, lalu klik "Tampilkan Rekap".</td></tr>`;
+
+            const fallbackYear = getYearFromMMYYYY(globalServerCurrentMonthYear) || new Date().getFullYear();
+            const fallbackMonth = getMonthStrFromMMYYYY(globalServerCurrentMonthYear) || String(new Date().getMonth() + 1).padStart(2, '0');
+            const minAllowedYearPopulate = getYearFromMMYYYY(globalAdminMinMonthYear) || new Date().getFullYear() - 5;
+            const maxAllowedYearPopulate = getYearFromMMYYYY(globalServerCurrentMonthYear) || new Date().getFullYear();
+
+            populateYearSelect('rekapTahunSelect', minAllowedYearPopulate, maxAllowedYearPopulate, fallbackYear);
+            if(rekapBulanSelectEl) rekapBulanSelectEl.value = fallbackMonth;
+            validateMonthRange('rekapBulanSelect', 'rekapTahunSelect');
+            window.scrollTo(0, 0);
+        }
+    }
+
+
+    function loadMonthlyRekap(monthYearToLoadParam) {
+        const rekapBulanSelectEl = document.getElementById('rekapBulanSelect');
+        const rekapTahunSelectEl = document.getElementById('rekapTahunSelect');
+        const rekapInfoBulanEl = document.getElementById('rekapInfoBulanTahun');
+        const rekapTableTheadEl = document.getElementById('rekapTableThead');
+        const rekapTableTbodyEl = document.getElementById('rekapTableTbody');
+
+        if (!rekapInfoBulanEl || !rekapTableTheadEl || !rekapTableTbodyEl) {
+            showAlert("Komponen UI rekap tidak siap atau tidak ditemukan.", "error");
+            hideLoading(); 
+            return;
+        }
+
+        let selectedMonthYear;
+
+        if (monthYearToLoadParam && /^\d{2}\/\d{4}$/.test(monthYearToLoadParam)) {
+            selectedMonthYear = monthYearToLoadParam;
+            if (rekapBulanSelectEl && rekapTahunSelectEl) {
+                const [mm, yyyy] = selectedMonthYear.split('/');
+                rekapBulanSelectEl.value = mm;
+                rekapTahunSelectEl.value = yyyy;
+            }
+        } else { 
+            if (!rekapBulanSelectEl || !rekapTahunSelectEl) {
+                showAlert("Elemen pilih bulan/tahun tidak ditemukan.", "error");
+                hideLoading();
+                return;
+            }
+            const selectedMonth = rekapBulanSelectEl.value;
+            const selectedYear = rekapTahunSelectEl.value;
+
+            if (!selectedMonth || !selectedYear) {
+                showAlert("Silakan pilih Bulan dan Tahun untuk ditampilkan.", "warning");
+                return; 
+            }
+            if (rekapBulanSelectEl.options[rekapBulanSelectEl.selectedIndex] && rekapBulanSelectEl.options[rekapBulanSelectEl.selectedIndex].disabled) {
+                showAlert("Bulan yang dipilih tidak valid untuk tahun ini.", "warning");
+                return;
+            }
+            selectedMonthYear = `${selectedMonth}/${selectedYear}`;
+        }
+
+        if (globalAdminMinMonthYear && globalServerCurrentMonthYear) {
+            const [sMonth, sYear] = selectedMonthYear.split('/');
+            const minYear = getYearFromMMYYYY(globalAdminMinMonthYear);
+            const minMonthStr = getMonthStrFromMMYYYY(globalAdminMinMonthYear);
+            const minMonth = minMonthStr ? parseInt(minMonthStr, 10) : null;
+            const maxYear = getYearFromMMYYYY(globalServerCurrentMonthYear);
+            const maxMonthStr = getMonthStrFromMMYYYY(globalServerCurrentMonthYear);
+            const maxMonth = maxMonthStr ? parseInt(maxMonthStr, 10) : null;
+            const currentSelectedYear = parseInt(sYear, 10);
+            const currentSelectedMonth = parseInt(sMonth, 10);
+        
+            if (minMonth !== null && (currentSelectedYear < minYear || (currentSelectedYear === minYear && currentSelectedMonth < minMonth))) {
+                showAlert(`Periode rekap ${selectedMonthYear} di luar rentang minimal (${globalAdminMinMonthYear}).`, "error");
+                if (monthYearToLoadParam) hideLoading();
+                return;
+            }
+            if (maxMonth !== null && (currentSelectedYear > maxYear || (currentSelectedYear === maxYear && currentSelectedMonth > maxMonth))) {
+                showAlert(`Periode rekap ${selectedMonthYear} di luar rentang maksimal (${globalServerCurrentMonthYear}).`, "error");
+                if (monthYearToLoadParam) hideLoading();
+                return;
+            }
+        }
+
+
+        showLoading(`Memuat rekapitulasi untuk periode ${selectedMonthYear}...`);
+        if(rekapInfoBulanEl) rekapInfoBulanEl.textContent = selectedMonthYear;
+        if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = "";
+        if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td colspan="1" style="text-align:center; padding: 20px;">Memuat data rekapitulasi untuk ${selectedMonthYear}...</td></tr>`;
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (!response || !response.success) {
+                    const errorMsg = response.error || "Gagal memuat data rekapitulasi dari server.";
+                    showAlert(errorMsg, "error");
+                    if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = "";
+                    if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td colspan="1" style="color:red; text-align:center; padding: 20px;">${errorMsg}</td></tr>`;
+                    activeRekapMonthYear = null; 
+                    return;
+                }
+
+                if (response.message) {
+                    if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = `<tr><th style="text-align:center;">Informasi</th></tr>`;
+                    if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td style="text-align:center; padding: 20px;">${response.message}</td></tr>`;
+                    activeRekapMonthYear = selectedMonthYear; 
+                    return;
+                }
+
+                if (!response.daftarHeaderTanggal || response.daftarHeaderTanggal.length === 0) {
+                    if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = `<tr><th style="text-align:center;">Informasi</th></tr>`;
+                    if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td style="text-align:center; padding: 20px;">Tidak ada data tanggal untuk periode ${selectedMonthYear}.</td></tr>`;
+                    activeRekapMonthYear = selectedMonthYear;
+                    return;
+                }
+
+                activeRekapMonthYear = selectedMonthYear;
+
+                let headerHtml = '<tr>';
+                headerHtml += '<th rowspan="2" style="vertical-align: middle; text-align:center; min-width: 150px; position: -webkit-sticky; position: sticky; left: 0; z-index: 3; background-color: var(--primary); color: var(--white); border-right: 1px solid #ddd;">Nama Guru</th>';
+                response.daftarHeaderTanggal.forEach(tglAngka => {
+                    headerHtml += `<th class="rekap-tgl-header" style="text-align:center;">${tglAngka}</th>`;
+                });
+                headerHtml += '</tr>';
+                headerHtml += '<tr>';
+                response.daftarHeaderTanggal.forEach((tglAngka, index) => {
+                    let namaHariUntukHeader = "";
+                    if (response.daftarGuru && response.daftarGuru.length > 0 &&
+                        response.daftarGuru[0].absensi && response.daftarGuru[0].absensi[index]) {
+                      namaHariUntukHeader = response.daftarGuru[0].absensi[index].namaHari.substring(0,3);
+                    }
+                    headerHtml += `<th class="rekap-tgl-header-hari" style="text-align:center; font-size:0.8em; padding: 4px;">${namaHariUntukHeader || tglAngka}</th>`;
+                });
+                headerHtml += '</tr>';
+                if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = headerHtml;
+
+                let tbodyHtml = '';
+                if (response.daftarGuru && response.daftarGuru.length > 0) {
+                    response.daftarGuru.forEach((guru, guruIndex) => {
+                        let trMasukClass = guruIndex > 0 ? "pemisah-guru-atas" : "";
+                        tbodyHtml += `<tr class="${trMasukClass}">`;
+                        tbodyHtml += `<td rowspan="2" class="rekap-nama-guru" style="position: -webkit-sticky; position: sticky; left: 0; z-index: 2; background-color: var(--white); border-right: 1px solid #ddd;">${guru.nama}</td>`;
+                        
+                        guru.absensi.forEach(absen => {
+                            const tooltipTanggal = `${absen.namaHari}, ${absen.tanggalFullStr || absen.tanggalFormatted}`;
+                            const titleText = `Tgl: ${tooltipTanggal}${absen.keterangan ? ' - ' + absen.keterangan : ''}`;
+                            tbodyHtml += `<td class="${absen.cssClass || ''}" title="${titleText}" data-label="M">${absen.jamMasuk}</td>`;
+                        });
+                        tbodyHtml += `</tr>`;
+                        
+                        let trPulangClass = "pemisah-guru-bawah";
+                        tbodyHtml += `<tr class="${trPulangClass}">`;
+                        guru.absensi.forEach(absen => {
+                            const tooltipTanggal = `${absen.namaHari}, ${absen.tanggalFullStr || absen.tanggalFormatted}`;
+                            const titleText = `Tgl: ${tooltipTanggal}${absen.keterangan ? ' - ' + absen.keterangan : ''}`;
+                            tbodyHtml += `<td class="${absen.cssClass || ''}" title="${titleText}" data-label="P">${absen.jamPulang}</td>`;
+                        });
+                        tbodyHtml += `</tr>`;
+                    });
+                } else {
+                    const colspanCount = (response.daftarHeaderTanggal ? response.daftarHeaderTanggal.length : 0) + 1;
+                    tbodyHtml = `<tr><td colspan="${colspanCount}" style="text-align:center; padding: 20px;">Tidak ada data absensi guru untuk ditampilkan pada periode ${selectedMonthYear}.</td></tr>`;
+                }
+                if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = tbodyHtml;
+
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Error server saat memuat rekapitulasi: ${err.message}`, "error");
+                if(rekapTableTheadEl) rekapTableTheadEl.innerHTML = "";
+                if(rekapTableTbodyEl) rekapTableTbodyEl.innerHTML = `<tr><td colspan="1" style="color:red; text-align:center; padding: 20px;">Error server: ${err.message}</td></tr>`;
+                activeRekapMonthYear = null; 
+            })
+            .getDynamicMonthlyRekap(selectedMonthYear);
+    }
+
+    function backToPreviousCeklokView() { 
+        if (currentView === 'hasil_ceklok' || currentView === 'kalender_pendidikan') {
+            if (loggedInUser.role === 'user' || (loggedInUser.role === 'admin' && namaGuru)) {
+                loadCeklokDataFromServer(namaGuru, activeCeklokMonthYear || globalServerCurrentMonthYear, loggedInUser.role === 'user');
+            } else if (loggedInUser.role === 'admin') {
+                goBackToAdminDashboard();
+            } else {
+                logout();
+            }
+        } else {
+            if (loggedInUser.role === 'admin') goBackToAdminDashboard();
+            else if (loggedInUser.role === 'user') logout(); 
+            else logout();
+        }
+    }
+    
+    function navigateToKalenderForm() { renderView('kalender_pendidikan'); }
+
+    function setupKalenderPendidikanView() {
+        loadAndDisplayKalenderEntries(); 
+        window.scrollTo(0,0);
+    }
+
+    function loadAndDisplayKalenderEntries() {
+        showLoading("Memuat entri kalender...");
+        google.script.run
+            .withSuccessHandler(response => { 
+                hideLoading();
+                const container = document.getElementById('existingKalenderEntriesTableBody'); 
+                if (!container) return;
+                if (response.error) { container.innerHTML = `<tr><td colspan="3" style="color:red;">Error: ${response.error}</td></tr>`; return; }
+                
+                const entries = response; 
+                if (!entries || entries.length === 0) { container.innerHTML = `<tr><td colspan="3">Belum ada data di Kalender Pendidikan.</td></tr>`; return; }
+                
+                let tableHtml = '';
+                entries.forEach(entry => {
+                    tableHtml += `<tr>
+                        <td data-label="Tanggal">${entry.date || '-'}</td>
+                        <td data-label="Keterangan">${entry.description || '-'}</td>
+                        <td data-label="Aksi" class="actions-cell"><button class="btn-danger" onclick="confirmDeleteKalenderEntry(${entry.sheetRow})">Hapus</button></td>
+                    </tr>`;
+                });
+                container.innerHTML = tableHtml;
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                const container = document.getElementById('existingKalenderEntriesTableBody');
+                if(container) container.innerHTML = `<tr><td colspan="3" style="color:red;">Gagal memuat Kalender: ${err.message}</td></tr>`;
+            })
+            .getKalenderPendidikanEntries();
+    }
+
+    function submitNewKalenderEntry() { 
+        const dateInputEl = document.getElementById('kalenderDate');
+        const descriptionEl = document.getElementById('kalenderDescription');
+        clearInputError(dateInputEl, descriptionEl);
+
+        const dateInputVal = dateInputEl.value; 
+        const description = descriptionEl.value.trim();
+
+        if (!dateInputVal) { showAlert("Tanggal wajib.", 'error'); showInputError(dateInputEl); return; } 
+        if (!description) { showAlert("Keterangan wajib.", 'error'); showInputError(descriptionEl); return; } 
+
+        const parts = dateInputVal.split('-'); 
+        const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`; 
+
+        showLoading("Menyimpan entri kalender...");
+        google.script.run
+            .withSuccessHandler(response => { 
+                hideLoading();
+                showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) {
+                    if(dateInputEl) dateInputEl.value = '';
+                    if(descriptionEl) descriptionEl.value = '';
+                    loadAndDisplayKalenderEntries(); 
+                }
+            })
+            .withFailureHandler(err => { hideLoading(); showAlert(`Gagal menambah entri: ${err.message}`, 'error'); })
+            .addKalenderPendidikanEntry({ date: formattedDate, description: description });
+    }
+
+    function confirmDeleteKalenderEntry(sheetRow) {
+        if (confirm("Yakin ingin menghapus entri Kalender ini?")) {
+            showLoading("Menghapus entri...");
+            google.script.run
+                .withSuccessHandler(response => {
+                    hideLoading();
+                    showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                    if (response.success) loadAndDisplayKalenderEntries();
+                })
+                .withFailureHandler(err => { hideLoading(); showAlert(`Gagal menghapus: ${err.message}`, 'error'); })
+                .deleteKalenderPendidikanEntry(sheetRow);
+        }
+    }
+    
+    function navigateToUserManagement() { renderView('user_management'); }
+
+    function setupUserManagementView() {
+        showLoading("Memuat data...");
+        google.script.run
+            .withSuccessHandler(teacherData => {
+                allTeachersList = teacherData.success ? (teacherData.teachers || []) : [];
+                if (!teacherData.success) showAlert(`Gagal memuat daftar guru untuk form: ${teacherData.error || "Error"}`, 'warning');
+                
+                google.script.run
+                    .withSuccessHandler(userResponse => {
+                        hideLoading();
+                        if (userResponse.success) renderUserListTable(userResponse.users);
+                        else {
+                            const container = document.getElementById('userListTableContainer'); 
+                            if(container) container.innerHTML = `<p style="color:red;">Error: ${userResponse.error}</p>`;
+                            showAlert(userResponse.error, 'error');
+                        }
+                        populateTeacherDropdownForUserForm(); 
+                        const roleSelect = document.getElementById('manageUserRole');
+                        if(roleSelect) toggleManageTeacherNameInput(roleSelect.value); 
+                        cancelEditUserForm(); 
+                    })
+                    .withFailureHandler(err => { hideLoading(); showAlert(`Gagal memuat pengguna: ${err.message}`, 'error'); })
+                    .getUsersForAdmin();
+            })
+            .withFailureHandler(err => { 
+                hideLoading(); 
+                allTeachersList = [];
+                showAlert(`Gagal memuat daftar guru: ${err.message}`, 'error');
+                 google.script.run
+                    .withSuccessHandler(userResponse => { /* ... */ })
+                    .withFailureHandler(err => { /* ... */ })
+                    .getUsersForAdmin();
+            })
+            .getTeachersForAdmin(); 
+        window.scrollTo(0,0);
+    }
+
+    function populateTeacherDropdownForUserForm(selectedTeacher = "") {
+        const dropdown = document.getElementById('manageUserActualTeacherNameDropdown'); 
+        const textInput = document.getElementById('manageUserActualTeacherNameInput'); 
+        if (!dropdown || !textInput) return;
+
+        if (allTeachersList && allTeachersList.length > 0) {
+            dropdown.style.display = 'block'; textInput.style.display = 'none';
+            dropdown.innerHTML = '<option value="">-- Pilih Nama Guru --</option>';
+            allTeachersList.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher; option.textContent = teacher;
+                if (teacher === selectedTeacher) option.selected = true;
+                dropdown.appendChild(option);
+            });
+            if(selectedTeacher) dropdown.value = selectedTeacher;
+
+        } else {
+            dropdown.style.display = 'none'; textInput.style.display = 'block';
+            textInput.value = selectedTeacher;
+        }
+    }
+
+    function toggleManageTeacherNameInput(role) { 
+        const group = document.getElementById('manageUserTeacherNameGroup'); 
+        const dropdown = document.getElementById('manageUserActualTeacherNameDropdown');
+        const textInput = document.getElementById('manageUserActualTeacherNameInput');
+        if (group) group.style.display = (role === 'user') ? 'block' : 'none';
+        
+        if (role === 'user' && (dropdown || textInput)) {
+            const currentTeacher = dropdown && dropdown.style.display !== 'none' ? dropdown.value : (textInput ? textInput.value : '');
+            populateTeacherDropdownForUserForm(currentTeacher);
+        }
+    }
+
+    function renderUserListTable(users) {
+        const container = document.getElementById('userListTableBody'); 
+        if (!container) return;
+        let tableHtml = '';
+        if (users && users.length > 0) {
+            users.forEach(user => {
+                tableHtml += `<tr>
+                    <td data-label="Username">${user.username}</td>
+                    <td data-label="Role">${user.role}</td>
+                    <td data-label="Nama Guru Asli">${user.teacherName || '-'}</td>
+                    <td data-label="Aksi" class="actions-cell">
+                        <button class="btn-warning" onclick="prepareEditUserForm('${user.username}', '${user.role}', '${user.teacherName || ''}')">Edit</button>
+                        ${loggedInUser && loggedInUser.username !== user.username ? `<button class="btn-danger" onclick="confirmDeleteUser('${user.username}')">Hapus</button>` : ''}
+                    </td></tr>`;
+            });
+        } else {
+            tableHtml += `<tr><td colspan="4">Tidak ada pengguna.</td></tr>`;
+        }
+        container.innerHTML = tableHtml;
+    }
+
+    function prepareEditUserForm(username, role, teacherName) {
+        const formTitle = document.getElementById('userFormTitle');
+        const editKey = document.getElementById('editUsernameKey');
+        const usernameInput = document.getElementById('manageUsernameInput');
+        const passwordInput = document.getElementById('manageUserPasswordInput');
+        const roleSelect = document.getElementById('manageUserRole');
+        const teacherDropdown = document.getElementById('manageUserActualTeacherNameDropdown');
+        const teacherTextInput = document.getElementById('manageUserActualTeacherNameInput');
+        const saveBtn = document.getElementById('btnSaveUser');
+        const cancelBtn = document.getElementById('btnCancelEditUser');
+
+        if(formTitle) formTitle.textContent = 'Edit Pengguna: ' + username;
+        if(editKey) editKey.value = username; 
+        if(usernameInput) { usernameInput.value = username; usernameInput.readOnly = true; }
+        if(passwordInput) { passwordInput.value = ''; passwordInput.placeholder = 'Kosongkan jika tidak ubah password'; }
+        if(roleSelect) roleSelect.value = role;
+        
+        toggleManageTeacherNameInput(role); 
+        if (role === 'user') {
+            if (teacherDropdown && teacherDropdown.style.display !== 'none') {
+                teacherDropdown.value = teacherName;
+            } else if (teacherTextInput) {
+                teacherTextInput.value = teacherName;
+            }
+        } else {
+            if (teacherDropdown) teacherDropdown.value = '';
+            if (teacherTextInput) teacherTextInput.value = '';
+        }
+        
+        if(saveBtn) saveBtn.textContent = 'Update Pengguna'; 
+        if(cancelBtn) cancelBtn.style.display = 'inline-block'; 
+        clearInlineError('userFormErrorGlobal'); 
+        if(formTitle) window.scrollTo(0, formTitle.offsetTop);
+    }
+
+    function cancelEditUserForm() { 
+        const formTitle = document.getElementById('userFormTitle');
+        const editKey = document.getElementById('editUsernameKey');
+        const usernameInput = document.getElementById('manageUsernameInput');
+        const passwordInput = document.getElementById('manageUserPasswordInput');
+        const roleSelect = document.getElementById('manageUserRole');
+        const teacherDropdown = document.getElementById('manageUserActualTeacherNameDropdown');
+        const teacherTextInput = document.getElementById('manageUserActualTeacherNameInput');
+        const saveBtn = document.getElementById('btnSaveUser');
+        const cancelBtn = document.getElementById('btnCancelEditUser');
+
+
+        if(formTitle) formTitle.textContent = 'Tambah Pengguna Baru';
+        if(editKey) editKey.value = '';
+        if(usernameInput) { usernameInput.value = ''; usernameInput.readOnly = false; }
+        if(passwordInput) { passwordInput.value = ''; passwordInput.placeholder = 'Password baru/awal'; }
+        if(roleSelect) roleSelect.value = 'user';
+        
+        if(teacherDropdown) teacherDropdown.value = '';
+        if(teacherTextInput) teacherTextInput.value = '';
+
+        if(roleSelect) toggleManageTeacherNameInput(roleSelect.value); // Pastikan konsisten dengan role default
+        
+        if(saveBtn) saveBtn.textContent = 'Simpan Pengguna';
+        if(cancelBtn) cancelBtn.style.display = 'none';
+        clearInlineError('userFormErrorGlobal');
+    }
+
+    function handleSaveUser() { 
+        const editUsernameKey = document.getElementById('editUsernameKey').value;
+        const isEditMode = !!editUsernameKey;
+
+        const usernameEl = document.getElementById('manageUsernameInput');
+        const passwordEl = document.getElementById('manageUserPasswordInput');
+        const roleEl = document.getElementById('manageUserRole');
+        const teacherDropdownEl = document.getElementById('manageUserActualTeacherNameDropdown');
+        const teacherInputEl = document.getElementById('manageUserActualTeacherNameInput');
+        const errorContainerId = 'userFormErrorGlobal';
+        clearInlineError(errorContainerId);
+        clearInputError(usernameEl, passwordEl, roleEl, teacherDropdownEl, teacherInputEl);
+
+        const username = usernameEl.value.trim();
+        const password = passwordEl.value; 
+        const role = roleEl.value;
+        let teacherName = "";
+        if (role === 'user') {
+            teacherName = (teacherDropdownEl && teacherDropdownEl.style.display !== 'none') ? teacherDropdownEl.value : teacherInputEl.value.trim();
+        }
+
+        if (!username) { showInlineError(errorContainerId, "Username wajib."); showInputError(usernameEl); return; }
+        if (!isEditMode && !password) { showInlineError(errorContainerId, "Password wajib untuk user baru."); showInputError(passwordEl);return; }
+        if (password && password.length < 4 && (isEditMode && password || !isEditMode) ) { 
+            showInlineError(errorContainerId, "Password minimal 4 karakter."); showInputError(passwordEl); return;
+        }
+        if (role === 'user' && !teacherName) {
+            showInlineError(errorContainerId, "Nama Guru Asli wajib untuk role 'user'.");
+            if(teacherDropdownEl && teacherDropdownEl.style.display !== 'none') showInputError(teacherDropdownEl); else showInputError(teacherInputEl);
+            return;
+        }
+
+        showLoading(isEditMode ? "Memperbarui..." : "Menambahkan...");
+        if (isEditMode) {
+            const userDataToUpdate = { newRole: role, newTeacherName: teacherName };
+            if (password) userDataToUpdate.newPassword = password; 
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) { cancelEditUserForm(); setupUserManagementView();  }
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Update gagal: ${err.message}`, 'error'); })
+            .updateUserByUsername(editUsernameKey, userDataToUpdate);
+        } else {
+            const newUser = { username, password, role, teacherName };
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) { cancelEditUserForm(); setupUserManagementView();  }
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Tambah gagal: ${err.message}`, 'error'); })
+            .addNewUser(newUser);
+        }
+    }
+
+    function confirmDeleteUser(username) {
+        if (username === loggedInUser.username) { showAlert("Tidak bisa menghapus akun sendiri.", 'error'); return; }
+        if (confirm(`Yakin hapus pengguna '${username}'?`)) {
+            showLoading("Menghapus pengguna...");
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) setupUserManagementView(); 
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Hapus gagal: ${err.message}`, 'error'); })
+            .deleteUserByUsername(username);
+        }
+    }
+
+    function navigateToTeacherManagement() { renderView('teacher_management'); }
+
+    function setupTeacherManagementView() {
+        showLoading("Memuat data guru...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    allTeachersList = response.teachers || [];
+                    renderTeacherListTable(allTeachersList);
+                } else {
+                    const container = document.getElementById('teacherListTableContainer'); 
+                    if(container) container.innerHTML = `<p style="color:red;">Error: ${response.error}</p>`;
+                    showAlert(response.error, 'error');
+                }
+                cancelEditTeacherForm(); 
+            })
+            .withFailureHandler(err => { hideLoading(); showAlert(`Gagal memuat guru: ${err.message}`, 'error'); })
+            .getTeachersForAdmin();
+        window.scrollTo(0,0);
+    }
+
+    function renderTeacherListTable(teachers) {
+        const container = document.getElementById('teacherListTableBody'); 
+        if (!container) return;
+        let tableHtml = '';
+        if (teachers && teachers.length > 0) {
+            teachers.forEach(teacher => {
+                tableHtml += `<tr>
+                    <td data-label="Nama Guru">${teacher}</td>
+                    <td data-label="Aksi" class="actions-cell">
+                        <button class="btn-warning" onclick="prepareEditTeacherForm('${teacher}')">Edit</button>
+                        <button class="btn-danger" onclick="confirmDeleteTeacher('${teacher}')">Hapus</button>
+                    </td></tr>`;
+            });
+        } else {
+            tableHtml += `<tr><td colspan="2">Belum ada nama guru.</td></tr>`;
+        }
+        container.innerHTML = tableHtml;
+    }
+
+    function prepareEditTeacherForm(teacherName) {
+        const formTitle = document.getElementById('teacherFormTitle');
+        const editKey = document.getElementById('editTeacherNameKey');
+        const nameInput = document.getElementById('manageTeacherNameInput');
+        const saveBtn = document.getElementById('btnSaveTeacher');
+        const cancelBtn = document.getElementById('btnCancelEditTeacher');
+
+        if(formTitle) formTitle.textContent = 'Edit Nama Guru'; 
+        if(editKey) editKey.value = teacherName;
+        if(nameInput) nameInput.value = teacherName; 
+        if(saveBtn) saveBtn.textContent = 'Update Nama Guru'; 
+        if(cancelBtn) cancelBtn.style.display = 'inline-block'; 
+        clearInlineError('teacherFormErrorGlobal'); 
+        if(formTitle) window.scrollTo(0, formTitle.offsetTop);
+    }
+
+    function cancelEditTeacherForm() { 
+        const formTitle = document.getElementById('teacherFormTitle');
+        const editKey = document.getElementById('editTeacherNameKey');
+        const nameInput = document.getElementById('manageTeacherNameInput');
+        const saveBtn = document.getElementById('btnSaveTeacher');
+        const cancelBtn = document.getElementById('btnCancelEditTeacher');
+
+        if(formTitle) formTitle.textContent = 'Tambah Nama Guru Baru';
+        if(editKey) editKey.value = '';
+        if(nameInput) nameInput.value = '';
+        if(saveBtn) saveBtn.textContent = 'Simpan Nama Guru';
+        if(cancelBtn) cancelBtn.style.display = 'none';
+        clearInlineError('teacherFormErrorGlobal');
+    }
+
+    function handleSaveTeacher() { 
+        const editTeacherNameKey = document.getElementById('editTeacherNameKey').value;
+        const isEditMode = !!editTeacherNameKey;
+        const teacherNameEl = document.getElementById('manageTeacherNameInput');
+        const teacherName = teacherNameEl.value.trim();
+        const errorContainerId = 'teacherFormErrorGlobal';
+        clearInlineError(errorContainerId); clearInputError(teacherNameEl);
+
+        if (!teacherName) { showInlineError(errorContainerId, "Nama guru wajib."); showInputError(teacherNameEl); return; }
+
+        showLoading(isEditMode ? "Memperbarui..." : "Menambahkan...");
+        if (isEditMode) {
+            if (editTeacherNameKey === teacherName) { hideLoading(); showInlineError(errorContainerId, "Nama baru sama dengan nama lama."); return; }
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) { cancelEditTeacherForm(); setupTeacherManagementView();  }
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Update gagal: ${err.message}`, 'error'); })
+            .updateTeacherByName(editTeacherNameKey, teacherName);
+        } else {
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) { cancelEditTeacherForm(); setupTeacherManagementView();  }
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Tambah gagal: ${err.message}`, 'error'); })
+            .addNewTeacher(teacherName);
+        }
+    }
+
+    function confirmDeleteTeacher(teacherName) {
+        if (confirm(`Yakin hapus nama guru '${teacherName}'? Ini juga bisa mempengaruhi akun user yang terhubung.`)) {
+            showLoading("Menghapus nama guru...");
+            google.script.run.withSuccessHandler(response => {
+                hideLoading(); showAlert(response.message || response.error, response.success ? 'success' : 'error');
+                if (response.success) setupTeacherManagementView(); 
+            }).withFailureHandler(err => { hideLoading(); showAlert(`Hapus gagal: ${err.message}`, 'error'); })
+            .deleteTeacherByName(teacherName);
+        }
+    }
+
+    function updateFooterYear() {
+        const yearEl = document.getElementById('currentYear');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+    }
+
+    window.onload = function() {
+        console.log("Page loaded. Checking for existing session...");
+        const appDiv = document.getElementById('app');
+        if(appDiv) appDiv.innerHTML = ''; // Kosongkan app div
+        updateFooterYear();
+        setupModalEventListeners(); 
+        closeProfileDropdownOnClickOutside(); // Tambahkan ini
+        closeProfileDropdownOnEscape();  // Tambahkan ini
+
+        const storedUserData = sessionStorage.getItem('loggedInUserData');
+        if (storedUserData) {
+            console.log("Found user data in sessionStorage.");
+            try {
+                loggedInUser = JSON.parse(storedUserData);
+                if (loggedInUser && loggedInUser.username && loggedInUser.role) {
+                    console.log("User data parsed successfully. Proceeding...");
+                    document.body.classList.remove('login-active'); // Hapus kelas login-active dari body
+                    proceedAfterLogin(); 
+                } else {
+                    console.warn("Stored user data is invalid. Clearing session.");
+                    sessionStorage.removeItem('loggedInUserData');
+                    document.body.classList.add('login-active'); // Tambahkan kelas login-active ke body
+                    renderView('login');
+                }
+            } catch (e) {
+                console.error("Failed to parse stored user data:", e);
+                sessionStorage.removeItem('loggedInUserData');
+                document.body.classList.add('login-active'); 
+                renderView('login');
+            }
+        } else {
+            console.log("No user data in sessionStorage. Rendering login view.");
+            document.body.classList.add('login-active'); 
+            renderView('login');
+        }
+    };
+
+    function setupLockIdAndExportClientFeatures() {
+        const lockIdInput = document.getElementById('lockIdInput');
+        const btnSimpanLockId = document.getElementById('btnSimpanLockIdClient');
+        const btnExportExcel = document.getElementById('btnExportExcelClient');
+        const lockIdStatusMsg = document.getElementById('lockIdStatusMessage');
+
+        if (lockIdInput) {
+            lockIdInput.addEventListener('input', function() {
+                if (btnExportExcel) {
+                    btnExportExcel.disabled = true;
+                    btnExportExcel.classList.remove('btn-ready-export');
+                    btnExportExcel.classList.add('btn-greyed-out');
+                }
+                if (lockIdStatusMsg) lockIdStatusMsg.textContent = '';
+                currentLockIdValue = null; 
+                currentBackupSheetName = null;
+            });
+        }
+    }
+
+    function handleSimpanLockIdClientSite() {
+        const lockIdInputEl = document.getElementById('lockIdInput');
+        const btnExportExcel = document.getElementById('btnExportExcelClient');
+        const lockIdStatusMsg = document.getElementById('lockIdStatusMessage');
+
+        if (!lockIdInputEl || !btnExportExcel || !lockIdStatusMsg) {
+            showAlert("Komponen UI untuk LOCK_ID tidak ditemukan pada halaman. Coba muat ulang.", "error");
+            return;
+        }
+
+        const lockIdValue = lockIdInputEl.value.trim();
+        if (!lockIdValue) {
+            showAlert("LOCK_ID tidak boleh kosong.", "error");
+            lockIdInputEl.focus();
+            return;
+        }
+        if (isNaN(parseInt(lockIdValue))) {
+            showAlert("LOCK_ID harus berupa angka.", "error");
+            lockIdInputEl.focus();
+            return;
+        }
+
+        if (!namaGuru) {
+            showAlert("Nama guru belum dipilih atau tidak valid. Silakan pilih guru terlebih dahulu.", "error");
+            return;
+        }
+        if (!activeCeklokMonthYear) {
+            showAlert("Periode bulan dan tahun belum aktif. Silakan muat data ceklok untuk periode yang diinginkan terlebih dahulu.", "error");
+            return;
+        }
+        if (!dataTanggal || dataTanggal.length === 0) {
+            showAlert("Tidak ada data ceklok yang dimuat untuk periode saat ini (" + activeCeklokMonthYear + "). Silakan muat data terlebih dahulu sebelum menyimpan LOCK_ID.", "warning");
+            return;
+        }
+        const currentCeklokDataForBackup = dataTanggal.map((row, i) => {
+            let jamMasukVal = '';
+            let jamPulangVal = '';
+            let ketValForBackup = ''; 
+
+            if (row.isLibur) { 
+                jamMasukVal = "";
+                jamPulangVal = "";
+                ketValForBackup = row.keteranganLiburManual || ""; 
+            } else { 
+                const jamMasukEl = document.getElementById(`jamMasuk${i}`);
+                const jamPulangEl = document.getElementById(`jamPulang${i}`);
+                const ketLiburManualEl = document.getElementById(`ketLiburManual${i}`); 
+
+                jamMasukVal = jamMasukEl ? jamMasukEl.value.trim() : '';
+                jamPulangVal = jamPulangEl ? jamPulangEl.value.trim() : '';
+                ketValForBackup = ketLiburManualEl ? ketLiburManualEl.value : ''; 
+                if (ketValForBackup && ketValForBackup !== "") {
+                    jamMasukVal = "";
+                    jamPulangVal = "";
+                }
+            }
+
+            return {
+                tanggal: row.tanggal, 
+                hari: row.hari,
+                jamMasuk: jamMasukVal,
+                jamPulang: jamPulangVal,
+                keteranganLiburManual: ketValForBackup 
+            };
+        });
+
+        showLoading("Menyimpan LOCK_ID, silahkan tunggu...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    showAlert(response.message || "LOCK_ID berhasil disimpan dan data disiapkan.", "success");
+                    lockIdStatusMsg.textContent = `LOCK_ID '${lockIdValue}' aktif untuk periode ${activeCeklokMonthYear}. Sheet cadangan: ${response.backupSheetName}. Siap export.`;
+                    lockIdStatusMsg.style.color = "green";
+                    btnExportExcel.disabled = false;
+                    btnExportExcel.classList.remove('btn-greyed-out');
+                    btnExportExcel.classList.add('btn-ready-export');
+                    currentLockIdValue = lockIdValue; 
+                    currentBackupSheetName = response.backupSheetName; 
+                } else {
+                    showAlert(response.error || "Gagal menyimpan LOCK_ID.", "error");
+                    lockIdStatusMsg.textContent = response.error || "Gagal memproses.";
+                    lockIdStatusMsg.style.color = "red";
+                    btnExportExcel.disabled = true;
+                    btnExportExcel.classList.add('btn-greyed-out');
+                    btnExportExcel.classList.remove('btn-ready-export');
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Error server saat menyimpan LOCK_ID: ${err.message}`, "error");
+                lockIdStatusMsg.textContent = `Error server: ${err.message}`;
+                lockIdStatusMsg.style.color = "red";
+                btnExportExcel.disabled = true;
+                btnExportExcel.classList.add('btn-greyed-out');
+                btnExportExcel.classList.remove('btn-ready-export');
+            })
+            .saveLockIdAndPrepareBackupSheet(namaGuru, activeCeklokMonthYear, lockIdValue, currentCeklokDataForBackup);
+    }
+
+    function handleExportExcelClientSite() {
+        const btnExportExcel = document.getElementById('btnExportExcelClient');
+        const lockIdInputEl = document.getElementById('lockIdInput');
+        const lockIdStatusMsg = document.getElementById('lockIdStatusMessage');
+
+        if (!btnExportExcel || !lockIdInputEl || !lockIdStatusMsg) {
+            showAlert("Komponen UI untuk export tidak ditemukan pada halaman. Coba muat ulang.", "error");
+            return;
+        }
+
+        if (!currentBackupSheetName || !currentLockIdValue) {
+            showAlert("LOCK_ID belum disimpan atau sheet cadangan belum siap. Klik 'Simpan LOCK_ID' dahulu.", "error");
+            return;
+        }
+        if (!namaGuru) {
+            showAlert("Nama guru belum dipilih atau tidak valid.", "error");
+            return;
+        }
+        if (!activeCeklokMonthYear) {
+            showAlert("Periode bulan dan tahun aktif tidak ditemukan. Silakan muat data ceklok terlebih dahulu.", "error");
+            return;
+        }
+
+        if (btnExportExcel.disabled) {
+            showAlert("Tombol export belum aktif. Pastikan LOCK_ID sudah disimpan dengan benar.", "warning");
+            return;
+        }
+
+        showLoading("File sedang diekspor, silahkan tunggu...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success && response.base64Data && response.fileName && response.mimeType) {
+                    triggerClientSideDownload(response.base64Data, response.fileName, response.mimeType);
+                    showAlert("Export Excel berhasil dimulai. File: " + response.fileName, "success", 5000); 
+                    
+                    lockIdInputEl.value = ''; 
+                    lockIdStatusMsg.textContent = "Export selesai. Sheet cadangan akan segera dihapus oleh server.";
+                    lockIdStatusMsg.style.color = "var(--grey-text)"; 
+                    btnExportExcel.disabled = true;
+                    btnExportExcel.classList.remove('btn-ready-export');
+                    btnExportExcel.classList.add('btn-greyed-out');
+                    
+                    currentLockIdValue = null; 
+                    currentBackupSheetName = null; 
+                } else {
+                    showAlert(response.error || "Gagal mengekspor data.", "error");
+                    lockIdStatusMsg.textContent = response.error || "Gagal mengekspor.";
+                    lockIdStatusMsg.style.color = "red";
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showAlert(`Error server saat export: ${err.message}`, "error");
+                if (lockIdStatusMsg) { 
+                    lockIdStatusMsg.textContent = `Error server export: ${err.message}`;
+                    lockIdStatusMsg.style.color = "red";
+                }
+            })
+            .exportBackupSheetToExcel(currentBackupSheetName, namaGuru, activeCeklokMonthYear, currentLockIdValue);
+    }
+
+    function triggerClientSideDownload(base64Data, fileName, mimeType) {
+      try {
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (e) {
+        console.error("Error saat memicu unduhan di browser:", e);
+        showAlert("Gagal memulai unduhan di browser. Periksa konsol untuk detail.", "error");
+      }
+    }
+
+    function openChangePasswordModal() {
+        clearInlineError('changePasswordError');
+        const currentPassEl = document.getElementById('currentPassword');
+        const newPassEl = document.getElementById('newPassword');
+        const confirmPassEl = document.getElementById('confirmNewPassword');
+        if(currentPassEl) currentPassEl.value = '';
+        if(newPassEl) newPassEl.value = '';
+        if(confirmPassEl) confirmPassEl.value = '';
+        const modal = document.getElementById('changePasswordModal');
+        if(modal) modal.style.display = 'block';
+    }
+
+    function closeChangePasswordModal() {
+        const modal = document.getElementById('changePasswordModal');
+        if(modal) modal.style.display = 'none';
+    }
+
+    function submitChangePassword() {
+        const currentPasswordEl = document.getElementById('currentPassword');
+        const newPasswordEl = document.getElementById('newPassword');
+        const confirmNewPasswordEl = document.getElementById('confirmNewPassword');
+        const errorContainerId = 'changePasswordError';
+
+        clearInlineError(errorContainerId);
+        clearInputError(currentPasswordEl, newPasswordEl, confirmNewPasswordEl);
+
+        const currentPassword = currentPasswordEl.value;
+        const newPassword = newPasswordEl.value;
+        const confirmNewPassword = confirmNewPasswordEl.value;
+
+        if (!currentPassword) {
+            showInlineError(errorContainerId, "Password lama wajib diisi.");
+            showInputError(currentPasswordEl);
+            return;
+        }
+        if (!newPassword) {
+            showInlineError(errorContainerId, "Password baru wajib diisi.");
+            showInputError(newPasswordEl);
+            return;
+        }
+        if (newPassword.length < 4) {
+            showInlineError(errorContainerId, "Password baru minimal 4 karakter.");
+            showInputError(newPasswordEl);
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            showInlineError(errorContainerId, "Konfirmasi password baru tidak cocok.");
+            showInputError(confirmNewPasswordEl);
+            return;
+        }
+
+        if (!loggedInUser || !loggedInUser.username) {
+            showAlert("Error: Informasi pengguna tidak ditemukan. Silakan login ulang.", "error");
+            return;
+        }
+
+        showLoading("Mengubah password...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    showAlert(response.message, 'success');
+                    closeChangePasswordModal();
+                } else {
+                    showInlineError(errorContainerId, response.error || "Gagal mengubah password.");
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                showInlineError(errorContainerId, `Error server: ${err.message}`);
+            })
+            .changeUserPassword(loggedInUser.username, currentPassword, newPassword);
+    }
+
+    function handleGoogleLoginAttempt() {
+        const loginErrorEl = document.getElementById('loginError');
+        if (loginErrorEl) loginErrorEl.style.display = "none"; 
+
+        showLoading("Mencoba login dengan Google...");
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                if (response.success) {
+                    loggedInUser = { username: response.username, role: response.role, teacherName: response.teacherName, googleEmail: response.googleEmail, primaryEmail: response.primaryEmail }; 
+                    try {
+                        sessionStorage.setItem('loggedInUserData', JSON.stringify(loggedInUser));
+                    } catch (e) {
+                        console.error("Gagal menyimpan sesi login Google di browser:", e);
+                    }
+                    document.body.classList.remove('login-active');
+                    proceedAfterLogin(); 
+                } else {
+                    if (loginErrorEl) {
+                        loginErrorEl.textContent = response.error || "Login dengan Google gagal.";
+                        loginErrorEl.style.display = "block";
+                    } else {
+                        showAlert(response.error || "Login dengan Google gagal.", "error");
+                    }
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                if (loginErrorEl) {
+                    loginErrorEl.textContent = "Error server saat login Google: " + err.message;
+                    loginErrorEl.style.display = "block";
+                } else {
+                    showAlert("Error server saat login Google: " + err.message, "error");
+                }
+            })
+            .loginViaLinkedGoogleAccount(); 
+    }
+    
+    function populateYearSelect(selectElementId, minYear, maxYear, defaultSelectedYear) {
+      const yearSelect = document.getElementById(selectElementId);
+      if (!yearSelect) {
+          console.error("Element select tahun tidak ditemukan:", selectElementId);
+          return;
+      }
+
+      yearSelect.innerHTML = ''; 
+
+        minYear = parseInt(minYear);
+        maxYear = parseInt(maxYear);
+        defaultSelectedYear = parseInt(defaultSelectedYear);
+
+      if (isNaN(minYear) || isNaN(maxYear)) {
+          console.error("minYear atau maxYear bukan angka yang valid untuk populateYearSelect");
+          const currentY = new Date().getFullYear();
+          minYear = isNaN(minYear) ? currentY : minYear;
+          maxYear = isNaN(maxYear) ? currentY : maxYear;
+          if (minYear > maxYear) maxYear = minYear; 
+      }
+
+
+      if (minYear > maxYear) {
+            console.warn(`populateYearSelect: minYear (${minYear}) is greater than maxYear (${maxYear}). Defaulting to maxYear only.`);
+            maxYear = minYear; 
+      }
+
+      for (let year = maxYear; year >= minYear; year--) {
+          const option = document.createElement('option');
+          option.value = year;
+          option.textContent = year;
+          if (year === defaultSelectedYear) {
+              option.selected = true;
+          }
+          yearSelect.appendChild(option);
+      }
+      if (yearSelect.options.length > 0 && !yearSelect.value && defaultSelectedYear) {
+            yearSelect.value = defaultSelectedYear; 
+            if(!yearSelect.value) yearSelect.value = yearSelect.options[0].value; 
+      } else if (yearSelect.options.length > 0 && !yearSelect.value) {
+            yearSelect.value = yearSelect.options[0].value;
+      }
+    }
+
+    function getYearFromMMYYYY(mm_yyyy_string) {
+      if (!mm_yyyy_string || !mm_yyyy_string.includes('/')) {
+          // console.warn("Format mm_yyyy_string salah di getYearFromMMYYYY, mengembalikan tahun ini.");
+          return new Date().getFullYear();
+      }
+      const parts = mm_yyyy_string.split('/');
+      if (parts.length === 2 && !isNaN(parseInt(parts[1], 10))) {
+          return parseInt(parts[1], 10);
+      }
+      return new Date().getFullYear();
+    }
+
+    function getMonthStrFromMMYYYY(mm_yyyy_string) {
+        if (!mm_yyyy_string || !mm_yyyy_string.includes('/')) {
+            // console.warn("Format mm_yyyy_string salah di getMonthStrFromMMYYYY, mengembalikan bulan ini.");
+            return String(new Date().getMonth() + 1).padStart(2, '0');
+        }
+        const parts = mm_yyyy_string.split('/');
+        if (parts.length === 2 && parts[0].length === 2 && !isNaN(parseInt(parts[0],10))) {
+             return parts[0];
+        }
+        return String(new Date().getMonth() + 1).padStart(2, '0');
+    }
+
+    function validateMonthRange(bulanSelectId, tahunSelectId) {
+            const bulanSelect = document.getElementById(bulanSelectId);
+            const tahunSelect = document.getElementById(tahunSelectId);
+
+            if (!bulanSelect || !tahunSelect || !globalAdminMinMonthYear || !globalServerCurrentMonthYear) {
+                // console.warn("validateMonthRange: Elemen atau variabel global tidak siap.");
+                return;
+            }
+
+            const selectedYear = parseInt(tahunSelect.value);
+            // Ambil nilai bulan yang sedang terpilih SEBELUM kita memodifikasi opsi
+            const previouslySelectedMonthValue = bulanSelect.value;
+
+            const minDefinedYear = getYearFromMMYYYY(globalAdminMinMonthYear);
+            const minDefinedMonth = parseInt(getMonthStrFromMMYYYY(globalAdminMinMonthYear));
+            const maxDefinedYear = getYearFromMMYYYY(globalServerCurrentMonthYear);
+            const maxDefinedMonth = parseInt(getMonthStrFromMMYYYY(globalServerCurrentMonthYear));
+
+            let firstVisibleAndValidMonthValue = null; // Untuk menyimpan value bulan pertama yang valid dan terlihat
+            let isPreviouslySelectedMonthNowHidden = false;
+
+            for (let i = 0; i < bulanSelect.options.length; i++) {
+                const option = bulanSelect.options[i];
+                const monthOptionValue = parseInt(option.value);
+                let hideOption = false;
+
+                if (selectedYear < minDefinedYear || selectedYear > maxDefinedYear) {
+                    hideOption = true;
+                } else {
+                    if (selectedYear === minDefinedYear && monthOptionValue < minDefinedMonth) {
+                        hideOption = true;
+                    }
+                    if (selectedYear === maxDefinedYear && monthOptionValue > maxDefinedMonth) {
+                        hideOption = true;
+                    }
+                }
+                
+                option.style.display = hideOption ? 'none' : ''; // Sembunyikan atau tampilkan
+
+                if (!hideOption && firstVisibleAndValidMonthValue === null) {
+                    firstVisibleAndValidMonthValue = option.value; // Catat bulan pertama yang terlihat dan valid
+                }
+
+                // Cek apakah opsi yang sebelumnya terpilih kini disembunyikan
+                if (option.value === previouslySelectedMonthValue && hideOption) {
+                    isPreviouslySelectedMonthNowHidden = true;
+                }
+            }
+
+            // Jika bulan yang sebelumnya terpilih sekarang disembunyikan,
+            // atau jika tidak ada bulan yang terpilih (misalnya saat load pertama kali dan defaultnya tersembunyi),
+            // pilih bulan pertama yang terlihat dan valid.
+            if (isPreviouslySelectedMonthNowHidden || !bulanSelect.value || bulanSelect.options[bulanSelect.selectedIndex]?.style.display === 'none') {
+                if (firstVisibleAndValidMonthValue) {
+                    bulanSelect.value = firstVisibleAndValidMonthValue;
+                } else {
+                    // Kasus langka: tidak ada bulan yang valid untuk tahun yang dipilih.
+                    // Ini seharusnya tidak terjadi jika rentang tahun juga divalidasi dengan benar.
+                    // Anda bisa mengatur default atau membiarkannya kosong, tergantung preferensi.
+                    // Untuk saat ini, jika tidak ada yang valid, biarkan seperti itu (dropdown mungkin kosong).
+                    console.warn("Tidak ada bulan yang valid untuk tahun yang dipilih:", selectedYear, "pada dropdown:", bulanSelectId);
+                    // Jika Anda ingin selalu ada nilai, Anda bisa set ke "" atau handle berbeda
+                    // bulanSelect.value = ""; // Contoh jika ingin dikosongkan
+                }
+            }
+    }
+
+
+    function handlePrintRekap() {
+        if (!activeRekapMonthYear) { 
+            showAlert("Tidak ada data rekap yang sedang ditampilkan untuk dicetak. Muat data rekap terlebih dahulu.", "warning");
+            return;
+        }
+        const periodeCetak = activeRekapMonthYear; 
+
+        showLoading("Menyiapkan data untuk dicetak...");
+        google.script.run
+            .withSuccessHandler(responseGenerate => {
+                if (responseGenerate.success) {
+                    showAlert(responseGenerate.message || "Sheet sementara disiapkan, mengunduh PDF...", "info", 2000);
+                    google.script.run
+                        .withSuccessHandler(responseDownload => {
+                            hideLoading();
+                            if (responseDownload.success && responseDownload.downloadUrl) {
+                                window.open(responseDownload.downloadUrl, '_blank');
+                                showAlert(`PDF "${responseDownload.fileName}" berhasil dibuat dan proses unduh dimulai. Sheet sementara akan dihapus.`, "success", 7000); 
+                            } else {
+                                showAlert(responseDownload.error || "Gagal mengunduh PDF.", "error");
+                            }
+                        })
+                        .withFailureHandler(errDownload => {
+                            hideLoading();
+                            showAlert(`Error server saat mengunduh PDF: ${errDownload.message}`, "error");
+                        })
+                        .downloadSheetAsPDF(responseGenerate.sheetId, responseGenerate.lastDataRow, responseGenerate.lastDataCol);
+                } else {
+                    hideLoading();
+                    showAlert(responseGenerate.error || "Gagal menyiapkan data cetak.", "error");
+                }
+            })
+            .withFailureHandler(errGenerate => {
+                hideLoading();
+                showAlert(`Error server saat menyiapkan data cetak: ${errGenerate.message}`, "error");
+            })
+            .generatePrintableSheet(periodeCetak); 
+    }
+
+    function isValidEmail(email) {
+        if (!email) return false;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(String(email).toLowerCase());
+    }
+
+    function openPrimaryEmailModal() {
+        const modal = document.getElementById('primaryEmailModal');
+        if (modal) modal.style.display = 'flex';
+        showPrimaryEmailStep1(); // Selalu mulai dari tahap 1
+    }
+
+    function closePrimaryEmailModal() {
+        const modal = document.getElementById('primaryEmailModal');
+        if (modal) modal.style.display = 'none';
+        emailForPrimaryVerification = null; // Reset email yang diverifikasi
+        if (primaryEmailOtpTimerInterval) {
+            clearInterval(primaryEmailOtpTimerInterval);
+            primaryEmailOtpTimerInterval = null;
+        }
+        // Reset juga input dan error jika ada
+        const emailInput = document.getElementById('primaryEmailInput');
+        const otpInput = document.getElementById('primaryEmailOtpInput');
+        const errorStep1 = document.getElementById('primaryEmailStep1Error');
+        const errorStep2 = document.getElementById('primaryEmailStep2Error');
+        if(emailInput) emailInput.value = '';
+        if(otpInput) otpInput.value = '';
+        if(errorStep1) errorStep1.style.display = 'none';
+        if(errorStep2) errorStep2.style.display = 'none';
+    }
+
+    function handleRequestPrimaryEmailOTP() {
+        const emailInput = document.getElementById('primaryEmailInput');
+        const errorDiv = document.getElementById('primaryEmailStep1Error');
+        const requestButton = document.getElementById('btnRequestPrimaryEmailOTP');
+
+        if (!emailInput || !errorDiv || !requestButton) {
+            showAlert("Komponen modal email (tahap 1) tidak ditemukan.", "error");
+            return;
+        }
+
+        const email = emailInput.value.trim().toLowerCase();
+        clearInputError(emailInput);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!email) {
+            errorDiv.textContent = "Email tidak boleh kosong.";
+            errorDiv.style.display = 'block';
+            showInputError(emailInput);
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            errorDiv.textContent = "Format email tidak valid.";
+            errorDiv.style.display = 'block';
+            showInputError(emailInput);
+            return;
+        }
+
+        if (!loggedInUser || !loggedInUser.username) {
+            errorDiv.textContent = "Sesi pengguna tidak ditemukan. Silakan login ulang."; // Seharusnya tidak terjadi jika modal ini muncul
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        emailForPrimaryVerification = email; // Simpan email yang akan diverifikasi
+        requestButton.disabled = true;
+        requestButton.textContent = "Mengirim...";
+        showLoading("Meminta kode verifikasi...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                // Tombol akan di-enable lagi jika user kembali ke step 1
+                // requestButton.disabled = false; 
+                // requestButton.textContent = "Kirim Kode Verifikasi";
+                if (response.success) {
+                    showAlert(response.message, 'success', 5000);
+                    showPrimaryEmailStep2(response.emailSentTo || email); // Pindah ke tahap 2
+                } else {
+                    errorDiv.textContent = response.error || "Gagal mengirim OTP.";
+                    errorDiv.style.display = 'block';
+                    requestButton.disabled = false; // Aktifkan lagi tombol jika gagal
+                    requestButton.textContent = "Kirim Kode Verifikasi";
+                    emailForPrimaryVerification = null; // Reset jika gagal
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                requestButton.disabled = false;
+                requestButton.textContent = "Kirim Kode Verifikasi";
+                emailForPrimaryVerification = null; // Reset jika gagal
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .requestPrimaryEmailVerificationOTP(loggedInUser.username, email);
+    }
+
+    function handleVerifyAndSavePrimaryEmail() {
+        const otpInputEl = document.getElementById('primaryEmailOtpInput');
+        const errorDiv = document.getElementById('primaryEmailStep2Error');
+        const verifyButton = document.getElementById('btnVerifyAndSavePrimaryEmail');
+
+        if (!otpInputEl || !errorDiv || !verifyButton || !emailForPrimaryVerification) {
+            showAlert("Komponen modal email (tahap 2) atau email target tidak ditemukan.", "error");
+            if(errorDiv) {
+                errorDiv.textContent = "Sesi verifikasi tidak valid. Harap ulangi dari awal.";
+                errorDiv.style.display = 'block';
+            }
+            return;
+        }
+
+        const otp = otpInputEl.value.trim();
+        clearInputError(otpInputEl);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!otp) {
+            errorDiv.textContent = "Kode OTP tidak boleh kosong.";
+            errorDiv.style.display = 'block'; showInputError(otpInputEl); return;
+        }
+        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+            errorDiv.textContent = "Kode OTP harus 6 digit angka.";
+            errorDiv.style.display = 'block'; showInputError(otpInputEl); return;
+        }
+
+        if (!loggedInUser || !loggedInUser.username) {
+            errorDiv.textContent = "Sesi pengguna tidak valid."; 
+            errorDiv.style.display = 'block'; return;
+        }
+
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Memverifikasi...";
+        showLoading("Memverifikasi dan menyimpan email...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                verifyButton.disabled = false;
+                verifyButton.textContent = "Verifikasi & Simpan Email";
+                if (primaryEmailOtpTimerInterval) {
+                    clearInterval(primaryEmailOtpTimerInterval);
+                    primaryEmailOtpTimerInterval = null;
+                }
+
+                if (response.success) {
+                    showAlert(response.message, 'success');
+                    if (loggedInUser) {
+                        loggedInUser.primaryEmail = response.savedEmail;
+                    }
+                    const storedUserData = sessionStorage.getItem('loggedInUserData');
+                    if (storedUserData) {
+                        try {
+                            const userData = JSON.parse(storedUserData);
+                            userData.primaryEmail = response.savedEmail;
+                            sessionStorage.setItem('loggedInUserData', JSON.stringify(userData));
+                        } catch(e) { console.error("Gagal update primaryEmail di sessionStorage (setelah verifikasi):", e); }
+                    }
+                    closePrimaryEmailModal();
+                    emailForPrimaryVerification = null; // Reset setelah berhasil
+                } else {
+                    errorDiv.textContent = response.error || "Gagal verifikasi atau simpan email.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                verifyButton.disabled = false;
+                verifyButton.textContent = "Verifikasi & Simpan Email";
+                if (primaryEmailOtpTimerInterval) {
+                    clearInterval(primaryEmailOtpTimerInterval);
+                    primaryEmailOtpTimerInterval = null;
+                }
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .verifyPrimaryEmailOTPAndSave(loggedInUser.username, otp, emailForPrimaryVerification);
+    }
+    
+    function showPrimaryEmailStep1() {
+        const step1Div = document.getElementById('primaryEmailStep1');
+        const step2Div = document.getElementById('primaryEmailStep2');
+        const emailInput = document.getElementById('primaryEmailInput');
+        const errorStep1 = document.getElementById('primaryEmailStep1Error');
+        const btnRequestOTP = document.getElementById('btnRequestPrimaryEmailOTP');
+
+        if (step1Div) step1Div.style.display = 'block';
+        if (step2Div) step2Div.style.display = 'none';
+        if (emailInput) emailInput.value = emailForPrimaryVerification || ''; // Isi kembali jika ada proses kirim ulang
+        if (errorStep1) {
+            errorStep1.textContent = '';
+            errorStep1.style.display = 'none';
+        }
+        if (btnRequestOTP) {
+            btnRequestOTP.disabled = false;
+            btnRequestOTP.textContent = "Kirim Kode Verifikasi";
+        }
+        if (primaryEmailOtpTimerInterval) {
+            clearInterval(primaryEmailOtpTimerInterval);
+            primaryEmailOtpTimerInterval = null;
+        }
+        // Jangan reset emailForPrimaryVerification di sini agar bisa kirim ulang
+    }
+
+    function showPrimaryEmailStep2(emailSentTo) {
+        const step1Div = document.getElementById('primaryEmailStep1');
+        const step2Div = document.getElementById('primaryEmailStep2');
+        const otpSentDisplay = document.getElementById('otpSentToPrimaryEmailDisplay');
+        const otpInput = document.getElementById('primaryEmailOtpInput');
+        const errorStep2 = document.getElementById('primaryEmailStep2Error');
+        const btnVerify = document.getElementById('btnVerifyAndSavePrimaryEmail');
+
+        if (step1Div) step1Div.style.display = 'none';
+        if (step2Div) step2Div.style.display = 'block';
+        if (otpSentDisplay) otpSentDisplay.textContent = emailSentTo;
+        if (otpInput) {
+            otpInput.value = '';
+            otpInput.focus();
+        }
+        if (errorStep2) {
+            errorStep2.textContent = '';
+            errorStep2.style.display = 'none';
+        }
+        if (btnVerify) {
+            btnVerify.disabled = false;
+            btnVerify.textContent = "Verifikasi & Simpan Email";
+        }
+        startPrimaryEmailOtpTimer(PRIMARY_EMAIL_OTP_EXPIRY_MINUTES * 60);
+    }
+
+    function startPrimaryEmailOtpTimer(durationInSeconds) {
+        const timerDisplay = document.getElementById('primaryEmailOtpTimer');
+        if (!timerDisplay) return;
+
+        if (primaryEmailOtpTimerInterval) {
+            clearInterval(primaryEmailOtpTimerInterval);
+        }
+
+        let timer = durationInSeconds;
+        timerDisplay.textContent = formatOtpTime(timer); // formatOtpTime sudah ada
+
+        primaryEmailOtpTimerInterval = setInterval(function () {
+            timer--;
+            if (timer >= 0) {
+                timerDisplay.textContent = formatOtpTime(timer);
+            } else {
+                clearInterval(primaryEmailOtpTimerInterval);
+                primaryEmailOtpTimerInterval = null;
+                timerDisplay.textContent = "Kedaluwarsa";
+                const btnVerify = document.getElementById('btnVerifyAndSavePrimaryEmail');
+                if(btnVerify) btnVerify.disabled = true;
+                showAlert("Waktu OTP habis. Silakan minta OTP baru.", "warning", 4000);
+            }
+        }, 1000);
+    }    
+
+    function showForgotPasswordForm(event) {
+        if(event) event.preventDefault(); 
+        
+        const mainFields = document.getElementById('mainLoginFields');
+        const loginBtnContainer = document.getElementById('loginButtonContainer');
+        const forgotLink = document.getElementById('forgotPasswordLink');
+        const loginErr = document.getElementById('loginError');
+        const forgotContainer = document.getElementById('forgotPasswordContainer');
+        const resetContainer = document.getElementById('resetPasswordContainer');
+        const resetIdentifier = document.getElementById('resetIdentifierInput');
+        const resetIdentifierErr = document.getElementById('resetIdentifierError');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+
+
+        if(mainFields) mainFields.style.display = 'none';
+        if(loginBtnContainer) loginBtnContainer.style.display = 'none';
+        if(forgotLink) forgotLink.style.display = 'none'; 
+        if(loginErr) loginErr.style.display = 'none'; 
+
+        if(forgotContainer) forgotContainer.style.display = 'block';
+        if(resetContainer) resetContainer.style.display = 'none'; 
+        
+        if(resetIdentifier) resetIdentifier.value = '';
+        if(resetIdentifierErr) {
+            resetIdentifierErr.style.display = 'none';
+            resetIdentifierErr.textContent = '';
+        }
+        if(usernameInput) usernameInput.value = ''; 
+        if(passwordInput) passwordInput.value = '';
+    }
+
+    function showLoginForm() {
+        const mainFields = document.getElementById('mainLoginFields');
+        const loginBtnContainer = document.getElementById('loginButtonContainer');
+        const forgotLink = document.getElementById('forgotPasswordLink');
+        const forgotContainer = document.getElementById('forgotPasswordContainer');
+        const resetContainer = document.getElementById('resetPasswordContainer');
+        const loginErr = document.getElementById('loginError');
+
+        if(mainFields) mainFields.style.display = 'block';
+        if(loginBtnContainer) loginBtnContainer.style.display = 'block';
+        if(forgotLink) forgotLink.style.display = 'block'; 
+        
+        if(forgotContainer) forgotContainer.style.display = 'none';
+        if(resetContainer) resetContainer.style.display = 'none';
+
+        if(loginErr) loginErr.style.display = 'none'; 
+        usernameForReset = null; 
+        if (otpTimerInterval) {
+            clearInterval(otpTimerInterval); 
+            otpTimerInterval = null;
+        }
+    }
+
+    function handleSendOTPRequest() {
+        const identifierInput = document.getElementById('resetIdentifierInput');
+        const errorDiv = document.getElementById('resetIdentifierError');
+        const sendOTPButton = document.getElementById('btnSendOTP');
+
+        const identifier = identifierInput.value.trim();
+        clearInputError(identifierInput);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!identifier) {
+            errorDiv.textContent = "Username atau Email Utama tidak boleh kosong.";
+            errorDiv.style.display = 'block';
+            showInputError(identifierInput);
+            return;
+        }
+
+        sendOTPButton.disabled = true;
+        sendOTPButton.textContent = "Mengirim...";
+        showLoading("Memproses permintaan OTP...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                sendOTPButton.disabled = false;
+                sendOTPButton.textContent = "Kirim OTP";
+                if (response.success) {
+                    usernameForReset = response.username; 
+                    showAlert(response.message, 'success', 5000); 
+                    showOTPInputForm();
+                } else {
+                    errorDiv.textContent = response.error || "Gagal mengirim OTP.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                sendOTPButton.disabled = false;
+                sendOTPButton.textContent = "Kirim OTP";
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .requestPasswordResetOTP(identifier);
+    }
+
+    function showOTPInputForm() {
+        const forgotContainer = document.getElementById('forgotPasswordContainer');
+        const resetContainer = document.getElementById('resetPasswordContainer');
+        const otpInputEl = document.getElementById('otpInput');
+        const newPassEl = document.getElementById('newPasswordResetInput');
+        const confirmPassEl = document.getElementById('confirmNewPasswordResetInput');
+        const resetErrDiv = document.getElementById('resetPasswordError');
+
+        if(forgotContainer) forgotContainer.style.display = 'none';
+        if(resetContainer) resetContainer.style.display = 'block';
+
+        if(otpInputEl) otpInputEl.value = '';
+        if(newPassEl) newPassEl.value = '';
+        if(confirmPassEl) confirmPassEl.value = '';
+        if(resetErrDiv) {
+            resetErrDiv.style.display = 'none';
+            resetErrDiv.textContent = '';
+        }
+        startOTPTimer(10 * 60); 
+    }
+
+    function startOTPTimer(durationInSeconds) {
+        const timerDisplay = document.getElementById('otpTimer');
+        if (!timerDisplay) return;
+
+        if (otpTimerInterval) {
+            clearInterval(otpTimerInterval); 
+        }
+
+        let timer = durationInSeconds;
+        otpTimerInterval = setInterval(function () {
+            let minutes = parseInt(timer / 60, 10);
+            let seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerDisplay.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(otpTimerInterval);
+                otpTimerInterval = null;
+                timerDisplay.textContent = "Kedaluwarsa";
+                const btnReset = document.getElementById('btnResetPassword');
+                if(btnReset) btnReset.disabled = true;
+                showAlert("Waktu OTP habis. Silakan minta OTP baru.", "warning", 4000);
+            }
+        }, 1000);
+    }
+
+    function handleResetPassword() {
+        const otpInputEl = document.getElementById('otpInput');
+        const newPasswordEl = document.getElementById('newPasswordResetInput');
+        const confirmNewPasswordEl = document.getElementById('confirmNewPasswordResetInput');
+        const errorDiv = document.getElementById('resetPasswordError');
+        const resetButton = document.getElementById('btnResetPassword');
+
+        if (!otpInputEl || !newPasswordEl || !confirmNewPasswordEl || !errorDiv || !resetButton) {
+            showAlert("Komponen form reset password tidak ditemukan.", "error");
+            return;
+        }
+
+        const otp = otpInputEl.value.trim();
+        const newPassword = newPasswordEl.value; 
+        const confirmNewPassword = confirmNewPasswordEl.value;
+
+        clearInputError(otpInputEl, newPasswordEl, confirmNewPasswordEl);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!otp) {
+            errorDiv.textContent = "Kode OTP tidak boleh kosong.";
+            errorDiv.style.display = 'block';
+            showInputError(otpInputEl);
+            return;
+        }
+        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+            errorDiv.textContent = "Kode OTP harus 6 digit angka.";
+            errorDiv.style.display = 'block';
+            showInputError(otpInputEl);
+            return;
+        }
+        if (!newPassword) {
+            errorDiv.textContent = "Password baru tidak boleh kosong.";
+            errorDiv.style.display = 'block';
+            showInputError(newPasswordEl);
+            return;
+        }
+        if (newPassword.length < 4) {
+            errorDiv.textContent = "Password baru minimal 4 karakter.";
+            errorDiv.style.display = 'block';
+            showInputError(newPasswordEl);
+            return;
+        }
+        if (newPassword !== confirmNewPassword) {
+            errorDiv.textContent = "Konfirmasi password baru tidak cocok.";
+            errorDiv.style.display = 'block';
+            showInputError(confirmNewPasswordEl);
+            return;
+        }
+
+        if (!usernameForReset) { 
+            errorDiv.textContent = "Sesi reset password tidak valid. Silakan ulangi dari awal.";
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        resetButton.disabled = true;
+        resetButton.textContent = "Memproses...";
+        showLoading("Mereset password Anda...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                resetButton.disabled = false;
+                resetButton.textContent = "Reset Password";
+                if (otpTimerInterval) { 
+                    clearInterval(otpTimerInterval);
+                    otpTimerInterval = null;
+                }
+                if (response.success) {
+                    showAlert(response.message, 'success', 5000);
+                    showLoginForm(); 
+                    otpInputEl.value = '';
+                    newPasswordEl.value = '';
+                    confirmNewPasswordEl.value = '';
+                } else {
+                    errorDiv.textContent = response.error || "Gagal mereset password.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                resetButton.disabled = false;
+                resetButton.textContent = "Reset Password";
+                if (otpTimerInterval) {
+                    clearInterval(otpTimerInterval);
+                    otpTimerInterval = null;
+                }
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .verifyOTPAndResetPassword(usernameForReset, otp, newPassword);
+    }
+
+    function openChangePrimaryEmailModal(isResetToStep1 = false) {
+        const modal = document.getElementById('changePrimaryEmailModal');
+        const step1Div = document.getElementById('changeEmailStep1');
+        const step2Div = document.getElementById('changeEmailStep2');
+        const currentEmailDisplay = document.getElementById('currentPrimaryEmailDisplay');
+        const currentEmailForOtpSpan = document.getElementById('currentPrimaryEmailForOtp');
+        const newEmailInput = document.getElementById('newPrimaryEmailInput');
+        const otpInput = document.getElementById('changeEmailOtpInput');
+        const errorStep1 = document.getElementById('changeEmailStep1Error');
+        const errorStep2 = document.getElementById('changeEmailStep2Error');
+        const modalTitle = document.getElementById('changeEmailModalTitle');
+
+        if (!modal || !step1Div || !step2Div || !currentEmailDisplay || !newEmailInput || !otpInput || !errorStep1 || !errorStep2 || !currentEmailForOtpSpan || !modalTitle) {
+            showAlert("Komponen modal ubah email tidak lengkap.", "error");
+            return;
+        }
+
+        if (loggedInUser && loggedInUser.primaryEmail) {
+            currentEmailDisplay.textContent = loggedInUser.primaryEmail;
+            currentEmailForOtpSpan.textContent = loggedInUser.primaryEmail; 
+        } else {
+            showAlert("Email utama Anda belum terdaftar.", "warning");
+            currentEmailDisplay.textContent = "Tidak ada";
+            currentEmailForOtpSpan.textContent = "email lama Anda";
+        }
+        
+        if (isResetToStep1 || !proposedNewPrimaryEmail) {
+            modalTitle.textContent = "Ubah Email Utama Anda";
+            step1Div.style.display = 'block';
+            step2Div.style.display = 'none';
+            newEmailInput.value = '';
+            otpInput.value = ''; 
+            errorStep1.textContent = '';
+            errorStep1.style.display = 'none';
+            errorStep2.textContent = '';
+            errorStep2.style.display = 'none';
+            clearInputError(newEmailInput, otpInput);
+            proposedNewPrimaryEmail = null; 
+            if (changeEmailOtpTimerInterval) {
+                clearInterval(changeEmailOtpTimerInterval);
+                changeEmailOtpTimerInterval = null;
+            }
+            document.getElementById('btnSendChangeEmailOTP').disabled = false;
+            document.getElementById('btnSendChangeEmailOTP').textContent = "Kirim Kode Verifikasi";
+        } 
+        modal.style.display = 'flex';
+        if (step1Div.style.display === 'block') {
+            newEmailInput.focus();
+        }
+    }
+
+    function closeChangePrimaryEmailModal() {
+        const modal = document.getElementById('changePrimaryEmailModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        proposedNewPrimaryEmail = null; 
+        if (changeEmailOtpTimerInterval) {
+            clearInterval(changeEmailOtpTimerInterval);
+            changeEmailOtpTimerInterval = null;
+        }
+    }
+
+    function showChangeEmailStep2(newEmail, oldEmailForDisplay) {
+        const modalTitle = document.getElementById('changeEmailModalTitle');
+        const step1Div = document.getElementById('changeEmailStep1');
+        const step2Div = document.getElementById('changeEmailStep2');
+        const otpSentToDisplay = document.getElementById('otpSentToEmailDisplay');
+        const newProposedDisplay = document.getElementById('newProposedEmailDisplay');
+        const otpInput = document.getElementById('changeEmailOtpInput');
+        const errorStep2 = document.getElementById('changeEmailStep2Error');
+
+
+        if (modalTitle) modalTitle.textContent = "Masukkan Kode Verifikasi";
+        if (step1Div) step1Div.style.display = 'none';
+        if (step2Div) step2Div.style.display = 'block';
+        if (otpSentToDisplay) otpSentToDisplay.textContent = oldEmailForDisplay || (loggedInUser ? loggedInUser.primaryEmail : 'email lama Anda');
+        if (newProposedDisplay) newProposedDisplay.textContent = newEmail;
+        if (otpInput) {
+            otpInput.value = ''; 
+            otpInput.focus();
+        }
+        if(errorStep2) {
+            errorStep2.textContent = '';
+            errorStep2.style.display = 'none';
+        }
+        document.getElementById('btnVerifyAndSaveNewEmail').disabled = false;
+        document.getElementById('btnVerifyAndSaveNewEmail').textContent = "Verifikasi & Ganti Email";
+
+        startChangeEmailOtpTimer(CHANGE_EMAIL_OTP_EXPIRY_MINUTES * 60); 
+    }
+
+    function startChangeEmailOtpTimer(durationInSeconds) {
+        const timerDisplay = document.getElementById('changeEmailOtpTimer');
+        if (!timerDisplay) return;
+
+        if (changeEmailOtpTimerInterval) {
+            clearInterval(changeEmailOtpTimerInterval);
+        }
+
+        let timer = durationInSeconds;
+        timerDisplay.textContent = formatOtpTime(timer); 
+
+        changeEmailOtpTimerInterval = setInterval(function () {
+            timer--;
+            if (timer >= 0) {
+                timerDisplay.textContent = formatOtpTime(timer);
+            } else {
+                clearInterval(changeEmailOtpTimerInterval);
+                changeEmailOtpTimerInterval = null;
+                timerDisplay.textContent = "Kedaluwarsa";
+                const btnVerify = document.getElementById('btnVerifyAndSaveNewEmail');
+                if(btnVerify) btnVerify.disabled = true;
+                showAlert("Waktu OTP untuk ubah email habis. Silakan minta kode baru.", "warning", 4000);
+            }
+        }, 1000);
+    }
+
+    function formatOtpTime(totalSeconds) {
+        let minutes = parseInt(totalSeconds / 60, 10);
+        let seconds = parseInt(totalSeconds % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        return minutes + ":" + seconds;
+    }
+
+
+    function handleSendChangeEmailOTP() {
+        const newEmailInput = document.getElementById('newPrimaryEmailInput');
+        const errorDiv = document.getElementById('changeEmailStep1Error');
+        const sendButton = document.getElementById('btnSendChangeEmailOTP');
+
+        if (!newEmailInput || !errorDiv || !sendButton) return;
+
+        const newEmail = newEmailInput.value.trim().toLowerCase(); 
+        clearInputError(newEmailInput);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!newEmail) {
+            errorDiv.textContent = "Email baru tidak boleh kosong.";
+            errorDiv.style.display = 'block'; showInputError(newEmailInput); return;
+        }
+        if (!isValidEmail(newEmail)) {
+            errorDiv.textContent = "Format email baru tidak valid.";
+            errorDiv.style.display = 'block'; showInputError(newEmailInput); return;
+        }
+        if (loggedInUser && loggedInUser.primaryEmail && newEmail === loggedInUser.primaryEmail.toLowerCase()) {
+            errorDiv.textContent = "Email baru tidak boleh sama dengan email lama Anda.";
+            errorDiv.style.display = 'block'; showInputError(newEmailInput); return;
+        }
+        if (!loggedInUser || !loggedInUser.username) {
+            errorDiv.textContent = "Sesi pengguna tidak valid.";
+            errorDiv.style.display = 'block'; return;
+        }
+
+        sendButton.disabled = true;
+        sendButton.textContent = "Mengirim...";
+        showLoading("Meminta kode verifikasi...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                sendButton.disabled = false;
+                sendButton.textContent = "Kirim Kode Verifikasi";
+                if (response.success) {
+                    proposedNewPrimaryEmail = response.newEmailPreview || newEmail; 
+                    showAlert(response.message, 'success', 5000);
+                    showChangeEmailStep2(proposedNewPrimaryEmail, response.oldEmailForDisplay); 
+                } else {
+                    errorDiv.textContent = response.error || "Gagal mengirim kode verifikasi.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                sendButton.disabled = false;
+                sendButton.textContent = "Kirim Kode Verifikasi";
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .requestChangePrimaryEmailOTP(loggedInUser.username, newEmail);
+    }
+
+    function handleVerifyAndSaveNewEmail() {
+        const otpInputEl = document.getElementById('changeEmailOtpInput');
+        const errorDiv = document.getElementById('changeEmailStep2Error');
+        const verifyButton = document.getElementById('btnVerifyAndSaveNewEmail');
+
+        if (!otpInputEl || !errorDiv || !verifyButton) return;
+
+        const otp = otpInputEl.value.trim();
+        clearInputError(otpInputEl);
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        if (!otp) {
+            errorDiv.textContent = "Kode OTP tidak boleh kosong.";
+            errorDiv.style.display = 'block'; showInputError(otpInputEl); return;
+        }
+        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+            errorDiv.textContent = "Kode OTP harus 6 digit angka.";
+            errorDiv.style.display = 'block'; showInputError(otpInputEl); return;
+        }
+        if (!proposedNewPrimaryEmail) { 
+            errorDiv.textContent = "Sesi perubahan email tidak valid. Harap ulangi dari awal.";
+            errorDiv.style.display = 'block';
+            openChangePrimaryEmailModal(true); 
+            return;
+        }
+        if (!loggedInUser || !loggedInUser.username) {
+            errorDiv.textContent = "Sesi pengguna tidak valid.";
+            errorDiv.style.display = 'block'; return;
+        }
+
+        verifyButton.disabled = true;
+        verifyButton.textContent = "Memverifikasi...";
+        showLoading("Memverifikasi dan menyimpan email baru...");
+
+        google.script.run
+            .withSuccessHandler(response => {
+                hideLoading();
+                verifyButton.disabled = false;
+                verifyButton.textContent = "Verifikasi & Ganti Email";
+                if (changeEmailOtpTimerInterval) { 
+                    clearInterval(changeEmailOtpTimerInterval);
+                    changeEmailOtpTimerInterval = null;
+                }
+
+                if (response.success) {
+                    showAlert(response.message, 'success');
+                    if (loggedInUser) {
+                        loggedInUser.primaryEmail = response.updatedEmail;
+                    }
+                    const storedUserData = sessionStorage.getItem('loggedInUserData');
+                    if (storedUserData) {
+                        try {
+                            const userData = JSON.parse(storedUserData);
+                            userData.primaryEmail = response.updatedEmail;
+                            sessionStorage.setItem('loggedInUserData', JSON.stringify(userData));
+                        } catch(e) { console.error("Gagal update primaryEmail di sessionStorage:", e); }
+                    }
+                    const emailTextSpan = document.getElementById('userPrimaryEmailText');
+                    if (emailTextSpan) emailTextSpan.textContent = response.updatedEmail;
+                    
+                    closeChangePrimaryEmailModal();
+                    proposedNewPrimaryEmail = null; 
+                } else {
+                    errorDiv.textContent = response.error || "Gagal mengubah email.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .withFailureHandler(err => {
+                hideLoading();
+                verifyButton.disabled = false;
+                verifyButton.textContent = "Verifikasi & Ganti Email";
+                if (changeEmailOtpTimerInterval) {
+                    clearInterval(changeEmailOtpTimerInterval);
+                    changeEmailOtpTimerInterval = null;
+                }
+                errorDiv.textContent = `Error server: ${err.message}`;
+                errorDiv.style.display = 'block';
+            })
+            .verifyAndChangePrimaryEmail(loggedInUser.username, otp, proposedNewPrimaryEmail);
+    }
+
+  </script>
+</body>
+</html>
