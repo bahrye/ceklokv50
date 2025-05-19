@@ -1,0 +1,67 @@
+<div class="login-form-wrapper" id="loginContainer"> <div class="login-header">
+    <img src="URL_LOGO_ANDA_JIKA_ADA" alt="Logo Sekolah" id="loginLogo" style="display:none; max-width: 80px; margin-bottom: 15px;"> <h2>LOGIN CEKLOK GURU<br>MTS TANUNTUNG</h2>
+  </div>
+  
+  <div id="mainLoginFields">
+    <div class="form-group">
+      <label for="username">Username atau Email:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" name="password" required>
+        <span id="togglePassword" class="toggle-password-icon" title="Lihat password">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div id="loginError" class="error-message" style="display:none;"></div>
+  
+  <div class="btn-container" id="loginButtonContainer">
+    <button id="loginButton">Login</button>
+  </div>
+  
+  <div class="login-links">
+    <a href="#" id="forgotPasswordLink" onclick="showForgotPasswordForm(event)">Lupa Password?</a>
+  </div>
+
+  <div id="forgotPasswordContainer" style="display:none;">
+    <h3>Reset Password</h3>
+    <p>Masukkan username atau email utama Anda yang terdaftar untuk menerima kode OTP.</p>
+    <div class="form-group">
+      <label for="resetIdentifierInput">Username atau Email Utama:</label>
+      <input type="text" id="resetIdentifierInput" name="resetIdentifierInput" required>
+    </div>
+    <div id="resetIdentifierError" class="error-message" style="display:none;"></div>
+    <div class="btn-container">
+      <button id="btnSendOTP" onclick="handleSendOTPRequest()">Kirim OTP</button>
+      <button type="button" onclick="showLoginForm()" class="btn-secondary-action">Batal</button>
+    </div>
+  </div>
+
+  <div id="resetPasswordContainer" style="display:none;">
+    <h3>Masukkan Kode OTP</h3>
+    <p>Kode OTP telah dikirim ke email Anda. Silakan periksa folder inbox atau spam.</p>
+    <p>OTP akan kedaluwarsa dalam <span id="otpTimer">10:00</span> menit.</p>
+    <div class="form-group">
+      <label for="otpInput">Kode OTP (6 digit):</label>
+      <input type="text" id="otpInput" name="otpInput" required maxlength="6" pattern="\d{6}" inputmode="numeric">
+    </div>
+    <div class="form-group">
+      <label for="newPasswordResetInput">Password Baru:</label>
+      <input type="password" id="newPasswordResetInput" name="newPasswordResetInput" required>
+    </div>
+    <div class="form-group">
+      <label for="confirmNewPasswordResetInput">Konfirmasi Password Baru:</label>
+      <input type="password" id="confirmNewPasswordResetInput" name="confirmNewPasswordResetInput" required>
+    </div>
+    <div id="resetPasswordError" class="error-message" style="display:none;"></div>
+    <div class="btn-container">
+      <button id="btnResetPassword" onclick="handleResetPassword()">Reset Password</button>
+      <button type="button" onclick="showLoginForm()" class="btn-secondary-action">Batal</button>
+    </div>
+  </div>
+</div>
