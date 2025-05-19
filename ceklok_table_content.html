@@ -1,0 +1,145 @@
+<div class="container" id="ceklokInputContainer">
+  <h3>INPUT CEKLOK</h3>
+  <h3 id="ceklokGuruName" style="color: var(--secondary);">Nama Guru</h3>
+
+  <div style="text-align: center; margin-bottom: 10px;">
+    <label style="font-weight: bold; font-size: 1.1em; color: var(--text);">Pilih Bulan dan Tahun Ceklok</label>
+  </div>
+
+  <div class="form-row" 
+       style="justify-content: center; /* Memusatkan item-item di tengah */
+              align-items: center;    /* Menyejajarkan item secara vertikal di tengah */
+              margin-bottom: 20px; 
+              gap: 8px; /* Jarak antar elemen (bulan, strip, tahun, tombol) */
+              /* 'flex-wrap: wrap;' dari style inline sebelumnya dihapus agar mencoba tetap sebaris.
+                 Responsivitas akan ditangani oleh media query global untuk .form-row jika ada. */
+              ">
+      
+      <select id="ceklokBulanSelect" title="Pilih Bulan" 
+              style="padding: 8px 10px; 
+                     border-radius: 5px; 
+                     border: 1px solid var(--border-color); 
+                     min-width: 130px; /* Lebar minimal untuk kotak bulan */
+                     font-size: 1em;">
+        <option value="01">Januari</option>
+        <option value="02">Februari</option>
+        <option value="03">Maret</option>
+        <option value="04">April</option>
+        <option value="05">Mei</option>
+        <option value="06">Juni</option>
+        <option value="07">Juli</option>
+        <option value="08">Agustus</option>
+        <option value="09">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+      </select>
+      
+      <span style="font-weight: bold;
+                     font-size: 1.5em; /* Slash sedikit lebih besar */
+                     color: var(--grey-text);
+                     line-height: 1; /* Membantu perataan vertikal untuk teks */
+                     padding: 0 2px; /* Sedikit padding horizontal untuk slash */
+                     ">/</span>
+      
+      <select id="ceklokTahunSelect" title="Pilih Tahun" 
+              style="padding: 8px 10px; 
+                     border-radius: 5px; 
+                     border: 1px solid var(--border-color); 
+                     min-width: 110px; /* Lebar minimal untuk kotak tahun */
+                     font-size: 1em;">
+        </select>
+      
+      <button id="btnLoadCeklokDataByMonth" onclick="loadCeklokDataForSelectedMonth()" 
+              style="margin-left: 12px; /* Sedikit jarak tambahan sebelum tombol */
+                     padding: 9px 15px; 
+                     font-size: 0.95em;">Muat Data</button>
+  </div>
+  <p style="text-align:center;"><strong>Data untuk Bulan:</strong> <span id="ceklokBulanTahunDisplay">Bulan/Tahun</span></p>
+  
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Hari</th><th>Tanggal</th><th>Data Masuk</th><th>Data Pulang</th>
+          <th>Input Jam Masuk (HH.MM)</th><th>Input Jam Pulang (HH.MM)</th>
+          <th>Keterangan Libur/Alasan Tidak Masuk</th>
+        </tr>
+      </thead>
+      <tbody id="ceklokTableBody">
+        <tr><td colspan="7">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="btn-container">
+    <button onclick="submitCeklokData()">Simpan Data Ceklok</button>
+    <span id="ceklokTombolKembaliContainer" style="display:inline-block;">
+      <button onclick="goBackToAdminDashboard()">Kembali ke Dashboard</button> 
+    </span>
+    <button onclick="navigateToHasilCeklok()">Lihat Hasil Ceklok</button>
+  </div>
+
+  <div style="margin-top: 30px; padding-top:20px; border-top: 1px solid #eee; background-color: #f9f9f9; border-radius: 8px; padding: 20px;">
+    <h4 style="margin-top:0; color: var(--primary);">== Export File Excel ==</h4>
+    <p style="font-size:0.9em; color: var(--grey-text);">Fitur ini bisa digunakan untuk membuat file excel yang dapat di UPLOAD EXCEL ke absensi aplikasi EMIS sehingga tidak perlu menginput absensi 2X. Tinggal download, upload, dan otomatis jam masuk dan jam pulang di EMIS terisi.
+    <br><br>Langkah-langkahnya:
+    <br>1. Silahkan Download Template Absensi EMIS terlebih dahulu (EMIS : Absensi > Aksi > Lihat Detail > DOWNLOAD TEMPLATE), kemudian buka dan catat LOCK ID yang paling pertama.
+    <br>2. Jika sudah dicatat LOCK ID-nya, silahkan dimasukkan di kotak LOCK_ID di bawah lalu klik Simpan Lock_ID.
+    <br>3. Setelah diklik dan berhasil, maka tombol Download File Excel bisa diklik. Silahkan di klik.
+    <br>4. Jika sudah terdownload, silahkan upload ke Aplikasi EMIS : Absensi > Aksi > Lihat Detail > UPLOAD EXCEL.</p>
+    
+    <div class="form-group" style="margin-bottom:15px;">
+      <label for="lockIdInput" style="font-weight:bold;">LOCK_ID (Ambil Dari Template EMIS):</label>
+      <input type="text" id="lockIdInput" placeholder="Masukkan LOCK ID disini" style="max-width: 250px; display: inline-block; margin-right: 10px; vertical-align: middle;">
+      <button id="btnSimpanLockIdClient" onclick="handleSimpanLockIdClientSite()" style="vertical-align: middle;">Simpan LOCK ID</button>
+    </div>
+    
+    <div class="form-group">
+      <button id="btnExportExcelClient" onclick="handleExportExcelClientSite()" class="btn-greyed-out" disabled style="padding: 10px 15px;">Download File Excel</button>
+      <small id="lockIdStatusMessage" style="display: block; margin-top: 8px; font-style: italic;"></small>
+    </div>
+  </div>
+
+  <!--
+  </div> <div id="currentUserEmailDisplay"
+      style="position: fixed; 
+              bottom: 65px; /* Sesuaikan agar tidak tertutup footer, jika footer 70px, mungkin 75px atau 80px */
+              right: 15px; 
+              background-color: var(--accent); 
+              padding: 8px 12px; 
+              border-radius: 6px; 
+              box-shadow: 0 2px 8px rgba(0,0,0,0.15); 
+              font-size: 0.85em; 
+              color: var(--text); 
+              cursor: pointer; 
+              z-index: 1001; /* Di atas footer jika footer punya z-index 1000 */
+              display: none; /* Awalnya disembunyikan, ditampilkan via JS jika email ada */
+              border: 1px solid var(--border-color);"
+      title="Klik untuk ubah email utama Anda">
+    Email: <span id="userPrimaryEmailText" style="font-weight: bold;"></span>
+  </div>
+  -->
+</div>
+
+<style>
+  .btn-greyed-out {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    border: 1px solid #bbb; /* Tambahkan border agar lebih terlihat seperti tombol disabled */
+  }
+  .btn-greyed-out:hover {
+    background-color: #ccc !important; /* Pastikan hover tidak mengubah warna */
+    color: #666 !important;
+  }
+  .btn-ready-export {
+    background-color: var(--success) !important; /* Menggunakan variabel CSS yang sudah ada */
+    color: white !important;
+    cursor: pointer !important;
+    border: 1px solid var(--success-hover);
+  }
+  .btn-ready-export:hover {
+    background-color: var(--success-hover) !important; /* Menggunakan variabel CSS yang sudah ada */
+  }
+</style>
